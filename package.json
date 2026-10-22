@@ -1,0 +1,29 @@
+{
+  "name": "tripchange",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter @tripchange/shared run build && pnpm --filter @tripchange/backend run build && pnpm --filter frontend run build",
+    "typecheck": "pnpm --filter @tripchange/shared run typecheck && pnpm --filter @tripchange/backend run typecheck && pnpm --filter frontend run typecheck",
+    "test": "pnpm --filter @tripchange/backend run test",
+    "db:generate": "pnpm --filter @tripchange/backend db:generate",
+    "db:migrate": "pnpm --filter @tripchange/backend db:migrate",
+    "db:push": "pnpm --filter @tripchange/backend db:push",
+    "db:seed": "pnpm --filter @tripchange/backend db:seed",
+    "db:studio": "pnpm --filter @tripchange/backend db:studio",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "pnpm --filter @tripchange/backend dev",
+    "dev": "pnpm --filter @tripchange/backend run dev",
+    "start": "pnpm --filter @tripchange/backend run start"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0",
+    "prettier": "^3.3.0",
+    "eslint": "^9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

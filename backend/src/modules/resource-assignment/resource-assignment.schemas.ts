@@ -1,0 +1,15 @@
+export {
+  RESOURCE_ASSIGNMENT_STATUSES,
+  resourceAssignmentStatusSchema,
+  createResourceAssignmentSchema,
+  updateResourceAssignmentSchema,
+  listResourceAssignmentsQuerySchema,
+  changeResourceAssignmentStatusSchema,
+  checkAvailabilityQuerySchema,
+  type ResourceAssignmentStatus,
+  type CreateResourceAssignmentInput,
+  type UpdateResourceAssignmentInput,
+  type ListResourceAssignmentsQuery,
+  type ChangeResourceAssignmentStatusInput,
+  type CheckAvailabilityQuery,
+} from "@tripchange/shared";

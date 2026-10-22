@@ -1,0 +1,1143 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum WorkspaceStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MembershipStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+}
+
+model Workspace {
+  id          String          @id @default(uuid())
+  name        String
+  slug        String          @unique
+  status      WorkspaceStatus @default(ACTIVE)
+  settings    Json            @default("{}")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  memberships Membership[]
+  roles       Role[]
+  auditEvents AuditEvent[]
+  staffProfiles StaffProfile[]
+  staffDocuments StaffDocument[]
+  destinations  Destination[]
+  trekTemplates TrekTemplate[]
+  customers     Customer[]
+  inquiries     Inquiry[]
+  inquiryActivities InquiryActivity[]
+  quotations    Quotation[]
+  bookings      Booking[]
+  payments      Payment[]
+  trips         Trip[]
+  tripTravelers TripTraveler[]
+  itineraryDays ItineraryDay[]
+  itineraryVersions ItineraryVersion[]
+  staffAssignments   StaffAssignment[]
+  resources          Resource[]
+  resourceAssignments ResourceAssignment[]
+  suppliers         Supplier[]
+  supplierRates     SupplierRate[]
+  supplierBookings  SupplierBooking[]
+  @@index([slug])
+  @@index([status])
+  @@map("workspaces")
+}
+
+model User {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  passwordHash   String      @map("password_hash")
+  firstName      String      @map("first_name")
+  lastName       String      @map("last_name")
+  status         UserStatus  @default(ACTIVE)
+  resetToken     String?     @unique @map("reset_token")
+  resetTokenExp  DateTime?   @map("reset_token_exp")
+  lastLoginAt    DateTime?   @map("last_login_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  sessions      Session[]
+  memberships   Membership[]
+  auditEvents   AuditEvent[]
+  staffProfile  StaffProfile?
+  verifiedStaffDocuments StaffDocument[] @relation("VerifiedStaffDocuments")
+  assignedInquiries Inquiry[] @relation("AssignedInquiries")
+  tripsAsOpsManager Trip[] @relation("TripsAsOpsManager")
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  workspaceId String   @map("workspace_id")
+  name        String
+  description String?
+  isSystem    Boolean  @default(false) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  memberships     Membership[]
+  rolePermissions RolePermission[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  description String?
+  category    String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  rolePermissions RolePermission[]
+
+  @@index([code])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String   @id @default(uuid())
+  roleId       String   @map("role_id")
+  permissionId String   @map("permission_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model Membership {
+  id          String           @id @default(uuid())
+  workspaceId String           @map("workspace_id")
+  userId      String           @map("user_id")
+  roleId      String           @map("role_id")
+  status      MembershipStatus @default(ACTIVE)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("memberships")
+}
+
+model AuditEvent {
+  id          String   @id @default(uuid())
+  workspaceId String?  @map("workspace_id")
+  userId      String?  @map("user_id")
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String?  @map("entity_id")
+  details     Json     @default("{}")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_events")
+}
+
+enum StaffType {
+  GUIDE
+  PORTER
+  COOK
+  DRIVER
+  ASSISTANT
+  OTHER
+}
+
+enum StaffStatus {
+  AVAILABLE
+  ASSIGNED
+  ON_LEAVE
+  UNAVAILABLE
+  INACTIVE
+}
+
+model StaffProfile {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  userId        String?  @unique @map("user_id")
+
+  staffType     StaffType @map("staff_type")
+  fullName      String   @map("full_name")
+  email         String?
+  phone         String?
+  whatsapp      String?
+  photoUrl      String?  @map("photo_url")
+
+  licenseNumber String?  @map("license_number")
+  licenseExpiry DateTime? @map("license_expiry")
+  languages     String[]
+  certifications String[]
+  experienceYears Int?   @map("experience_years")
+
+  experienceLevel String?  @map("experience_level")
+  preferredRoutes String[] @map("preferred_routes")
+
+  emergencyContactName  String? @map("emergency_contact_name")
+  emergencyContactPhone String? @map("emergency_contact_phone")
+
+  status        StaffStatus @default(AVAILABLE)
+
+  notes         String?
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  documents     StaffDocument[]
+  tripsAsLeadGuide Trip[] @relation("TripsAsLeadGuide")
+  assignments   StaffAssignment[]
+
+  @@index([workspaceId, staffType])
+  @@index([workspaceId, status])
+  @@index([workspaceId, fullName])
+  @@map("staff_profiles")
+}
+
+model StaffDocument {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  staffId       String   @map("staff_id")
+
+  documentType  String   @map("document_type")
+  title         String
+  fileUrl       String   @map("file_url")
+  fileName      String?  @map("file_name")
+  fileSize      Int?     @map("file_size")
+  mimeType      String?  @map("mime_type")
+  expiresAt     DateTime? @map("expires_at")
+  verified      Boolean  @default(false)
+  verifiedById  String?  @map("verified_by_id")
+  verifiedAt    DateTime? @map("verified_at")
+  notes         String?
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  staff         StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  verifiedBy    User?        @relation("VerifiedStaffDocuments", fields: [verifiedById], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, staffId])
+  @@index([workspaceId, expiresAt])
+  @@map("staff_documents")
+}
+
+model Destination {
+  id            String    @id @default(uuid())
+  workspaceId   String    @map("workspace_id")
+  name          String
+  region        String?
+  country       String    @default("Nepal")
+  latitude      Decimal?  @db.Decimal(10, 6)
+  longitude     Decimal?  @db.Decimal(10, 6)
+  altitude      Int?
+  description   String?
+  imageUrl      String?   @map("image_url")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  templates     TrekTemplate[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId, region])
+  @@map("destinations")
+}
+
+model TrekTemplate {
+  id                String         @id @default(uuid())
+  workspaceId       String         @map("workspace_id")
+  destinationId     String?        @map("destination_id")
+  name              String
+  code              String?
+  description       String?
+  region            String?
+  difficulty        TrekDifficulty
+  durationDays      Int            @map("duration_days")
+  maxAltitude       Int?           @map("max_altitude")
+  bestSeasons       String[]       @map("best_seasons")
+  basePrice         Decimal?       @db.Decimal(12, 2) @map("base_price")
+  basePriceCurrency String         @default("NPR") @map("base_price_currency")
+  requiredDocuments String[]       @map("required_documents")
+  packingList       Json?          @map("packing_list")
+  preparationNotes  String?        @map("preparation_notes")
+  inclusions        String[]
+  exclusions        String[]
+  terms             String?
+  status            TemplateStatus @default(DRAFT)
+  metadata          Json           @default("{}")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  deletedAt         DateTime?      @map("deleted_at")
+
+  workspace         Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  destination       Destination?   @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  days              TrekTemplateDay[]
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, name])
+  @@index([workspaceId, difficulty])
+  @@map("trek_templates")
+}
+
+model TrekTemplateDay {
+  id            String       @id @default(uuid())
+  templateId    String       @map("template_id")
+  dayNumber     Int          @map("day_number")
+  title         String
+  description   String?
+  startLocation String?      @map("start_location")
+  endLocation   String?      @map("end_location")
+  altitude      Int?
+  walkingHours  Decimal?     @db.Decimal(3, 1) @map("walking_hours")
+  accommodation String?
+  meals         String[]
+  activities    String[]
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  template      TrekTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, dayNumber])
+  @@index([templateId])
+  @@map("trek_template_days")
+}
+
+enum TrekDifficulty {
+  EASY
+  MODERATE
+  CHALLENGING
+  STRENUOUS
+  EXTREME
+}
+
+enum TemplateStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 2 — Customers & Inquiries
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum CustomerType {
+  INDIVIDUAL
+  GROUP
+  CORPORATE
+  AGENT
+}
+
+model Customer {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+
+  customerType  CustomerType @default(INDIVIDUAL) @map("customer_type")
+  fullName      String   @map("full_name")
+  email         String?
+  phone         String?
+  whatsapp      String?
+  nationality   String?
+  address       String?
+  dateOfBirth   DateTime? @map("date_of_birth")
+
+  emergencyContactName  String? @map("emergency_contact_name")
+  emergencyContactPhone String? @map("emergency_contact_phone")
+
+  source        String?
+  tags          String[]
+  notes         String?
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  inquiries     Inquiry[]
+  quotations    Quotation[]
+  bookings      Booking[]
+  trips         Trip[]
+  tripTravelers TripTraveler[]
+
+  @@index([workspaceId, email])
+  @@index([workspaceId, customerType])
+  @@index([workspaceId, fullName])
+  @@map("customers")
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  QUOTED
+  NEGOTIATING
+  WON
+  LOST
+  DISQUALIFIED
+}
+
+enum InquiryPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Inquiry {
+  id              String   @id @default(uuid())
+  workspaceId     String   @map("workspace_id")
+  customerId      String   @map("customer_id")
+  inquiryNumber   String   @map("inquiry_number")
+
+  trekInterest    String?  @map("trek_interest")
+  destinationText String?  @map("destination_text")
+  preferredStart  DateTime? @map("preferred_start")
+  preferredEnd    DateTime? @map("preferred_end")
+  flexibleDates   Boolean  @default(true) @map("flexible_dates")
+  groupSize       Int      @default(1) @map("group_size")
+  adults          Int      @default(1)
+  children        Int      @default(0)
+
+  specialRequirements String? @map("special_requirements")
+  budgetExpectation   Decimal? @db.Decimal(12, 2) @map("budget_expectation")
+  budgetCurrency      String   @default("NPR") @map("budget_currency")
+
+  status          InquiryStatus   @default(NEW)
+  priority        InquiryPriority @default(MEDIUM)
+  source          String?
+  assignedToId    String?  @map("assigned_to_id")
+
+  nextFollowUpAt  DateTime? @map("next_follow_up_at")
+  lastContactedAt DateTime? @map("last_contacted_at")
+  lostReason      String?   @map("lost_reason")
+
+  notes           String?
+  metadata        Json     @default("{}")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  assignedTo      User?     @relation("AssignedInquiries", fields: [assignedToId], references: [id], onDelete: SetNull)
+  activities      InquiryActivity[]
+  quotations      Quotation[]
+
+  @@unique([workspaceId, inquiryNumber])
+  @@index([workspaceId, status])
+  @@index([workspaceId, customerId])
+  @@index([workspaceId, assignedToId])
+  @@index([workspaceId, nextFollowUpAt])
+  @@map("inquiries")
+}
+
+model InquiryActivity {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  inquiryId     String   @map("inquiry_id")
+  userId        String?  @map("user_id")
+
+  activityType  String   @map("activity_type")
+  description   String
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  inquiry       Inquiry   @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, inquiryId])
+  @@index([workspaceId, createdAt])
+  @@map("inquiry_activities")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 3 — Quotations, Bookings & Payments
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  REVISED
+}
+
+model Quotation {
+  id              String   @id @default(uuid())
+  workspaceId     String   @map("workspace_id")
+  inquiryId       String?  @map("inquiry_id")
+  customerId      String   @map("customer_id")
+  quotationNumber String   @map("quotation_number")
+  version         Int      @default(1)
+
+  trekName        String   @map("trek_name")
+  startDate       DateTime @map("start_date")
+  endDate         DateTime @map("end_date")
+  groupSize       Int      @map("group_size")
+
+  subtotal        Decimal  @db.Decimal(12, 2)
+  discount        Decimal  @default(0) @db.Decimal(12, 2)
+  tax             Decimal  @default(0) @db.Decimal(12, 2)
+  total           Decimal  @db.Decimal(12, 2)
+  currency        String   @default("NPR")
+
+  inclusions      String[]
+  exclusions      String[]
+  terms           String?
+  notes           String?
+
+  status          QuotationStatus @default(DRAFT)
+  validUntil      DateTime? @map("valid_until")
+  sentAt          DateTime? @map("sent_at")
+  acceptedAt      DateTime? @map("accepted_at")
+  rejectedAt      DateTime? @map("rejected_at")
+  rejectionReason String?   @map("rejection_reason")
+
+  convertedToBookingId String? @unique @map("converted_to_booking_id")
+
+  metadata        Json     @default("{}")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  inquiry         Inquiry?  @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  customer        Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  lineItems       QuotationLineItem[]
+  versions        QuotationVersion[]
+  booking         Booking?
+
+  @@unique([workspaceId, quotationNumber])
+  @@index([workspaceId, status])
+  @@index([workspaceId, customerId])
+  @@index([workspaceId, inquiryId])
+  @@map("quotations")
+}
+
+model QuotationLineItem {
+  id           String   @id @default(uuid())
+  quotationId  String   @map("quotation_id")
+  category     String
+  description  String
+  quantity     Decimal  @db.Decimal(10, 2)
+  unit         String
+  unitPrice    Decimal  @db.Decimal(12, 2) @map("unit_price")
+  total        Decimal  @db.Decimal(12, 2)
+  isOptional   Boolean  @default(false) @map("is_optional")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  quotation    Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  @@index([quotationId])
+  @@map("quotation_line_items")
+}
+
+model QuotationVersion {
+  id           String   @id @default(uuid())
+  quotationId  String   @map("quotation_id")
+  version      Int
+  snapshot     Json
+  changedById  String?  @map("changed_by_id")
+  changeReason String?  @map("change_reason")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  quotation    Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  @@unique([quotationId, version])
+  @@index([quotationId])
+  @@map("quotation_versions")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+model Booking {
+  id              String   @id @default(uuid())
+  workspaceId     String   @map("workspace_id")
+  customerId      String   @map("customer_id")
+  quotationId     String?  @unique @map("quotation_id")
+  bookingNumber   String   @map("booking_number")
+
+  trekName        String   @map("trek_name")
+  startDate       DateTime @map("start_date")
+  endDate         DateTime @map("end_date")
+  groupSize       Int      @map("group_size")
+
+  totalAmount     Decimal  @db.Decimal(12, 2) @map("total_amount")
+  paidAmount      Decimal  @default(0) @db.Decimal(12, 2) @map("paid_amount")
+  balanceAmount   Decimal  @db.Decimal(12, 2) @map("balance_amount")
+  currency        String   @default("NPR")
+
+  status          BookingStatus @default(PENDING)
+  confirmedAt     DateTime? @map("confirmed_at")
+  cancelledAt     DateTime? @map("cancelled_at")
+  cancellationReason String? @map("cancellation_reason")
+
+  metadata        Json     @default("{}")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  quotation       Quotation? @relation(fields: [quotationId], references: [id], onDelete: SetNull)
+  payments        Payment[]
+  trip            Trip?
+
+  @@unique([workspaceId, bookingNumber])
+  @@index([workspaceId, status])
+  @@index([workspaceId, customerId])
+  @@index([workspaceId, startDate])
+  @@map("bookings")
+}
+
+enum PaymentType {
+  DEPOSIT
+  INSTALLMENT
+  FINAL_PAYMENT
+  REFUND
+  ADJUSTMENT
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  bookingId     String   @map("booking_id")
+
+  amount        Decimal  @db.Decimal(12, 2)
+  currency      String   @default("NPR")
+  paymentType   PaymentType @map("payment_type")
+  method        String?
+  reference     String?
+  receivedAt    DateTime @map("received_at")
+  recordedById  String?  @map("recorded_by_id")
+  evidence      String?
+  notes         String?
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  booking       Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, bookingId])
+  @@index([workspaceId, receivedAt])
+  @@map("payments")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4 — Trips, Travelers & Itinerary
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum TripStatus {
+  PLANNING
+  READY
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ItineraryVersionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Trip {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  bookingId     String?  @unique @map("booking_id")
+  customerId    String   @map("customer_id")
+  tripNumber    String   @map("trip_number")
+
+  name          String
+  startDate     DateTime @map("start_date")
+  endDate       DateTime @map("end_date")
+  groupSize     Int      @map("group_size")
+
+  status        TripStatus @default(PLANNING)
+
+  operationsManagerId String? @map("operations_manager_id")
+  leadGuideId         String? @map("lead_guide_id")
+
+  publishedItineraryVersionId String? @unique @map("published_itinerary_version_id")
+
+  notes         String?
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  booking       Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  customer      Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  operationsManager User? @relation("TripsAsOpsManager", fields: [operationsManagerId], references: [id], onDelete: SetNull)
+  leadGuide     StaffProfile? @relation("TripsAsLeadGuide", fields: [leadGuideId], references: [id], onDelete: SetNull)
+
+  travelers     TripTraveler[]
+  itineraryDays ItineraryDay[]
+  itineraryVersions ItineraryVersion[]
+  staffAssignments   StaffAssignment[]
+  resourceAssignments ResourceAssignment[]
+  supplierBookings  SupplierBooking[]
+
+  @@unique([workspaceId, tripNumber])
+  @@index([workspaceId, status])
+  @@index([workspaceId, customerId])
+  @@index([workspaceId, startDate])
+  @@index([workspaceId, operationsManagerId])
+  @@map("trips")
+}
+
+model TripTraveler {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  tripId        String   @map("trip_id")
+  customerId    String?  @map("customer_id")
+
+  fullName      String   @map("full_name")
+  email         String?
+  phone         String?
+  nationality   String?
+  dateOfBirth   DateTime? @map("date_of_birth")
+
+  passportNumber String? @map("passport_number")
+  passportExpiry DateTime? @map("passport_expiry")
+
+  emergencyContactName  String? @map("emergency_contact_name")
+  emergencyContactPhone String? @map("emergency_contact_phone")
+
+  dietaryRequirements  String? @map("dietary_requirements")
+  medicalNotes         String? @map("medical_notes")
+  insuranceProvider    String? @map("insurance_provider")
+  insurancePolicyNumber String? @map("insurance_policy_number")
+
+  isTripLeader  Boolean  @default(false) @map("is_trip_leader")
+  notes         String?
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  customer      Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, tripId])
+  @@index([workspaceId, customerId])
+  @@map("trip_travelers")
+}
+
+model ItineraryDay {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  tripId        String   @map("trip_id")
+
+  dayNumber     Int      @map("day_number")
+  title         String
+  description   String?
+  location      String?
+  altitude      Int?
+  startTime     String?  @map("start_time")
+  endTime       String?  @map("end_time")
+  walkingHours  Decimal? @db.Decimal(3, 1) @map("walking_hours")
+  accommodation String?
+  meals         String[]
+  activities    String[]
+
+  clientVisible Boolean  @default(true) @map("client_visible")
+  internalNotes String?  @map("internal_notes")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  supplierBookings SupplierBooking[]
+
+  @@unique([tripId, dayNumber])
+  @@index([workspaceId, tripId])
+  @@map("itinerary_days")
+}
+
+model ItineraryVersion {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  tripId        String   @map("trip_id")
+
+  version       Int
+  status        ItineraryVersionStatus @default(DRAFT)
+  snapshot      Json
+  publishedAt   DateTime? @map("published_at")
+  publishedById String?  @map("published_by_id")
+  changeNotes   String?  @map("change_notes")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@unique([tripId, version])
+  @@index([workspaceId, tripId])
+  @@index([workspaceId, status])
+  @@map("itinerary_versions")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 5 — Staff & Resource Assignment
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum StaffAssignmentStatus {
+  PROPOSED
+  CONFIRMED
+  DECLINED
+  CANCELLED
+  COMPLETED
+}
+
+model StaffAssignment {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  tripId        String   @map("trip_id")
+  staffId       String   @map("staff_id")
+
+  role          String
+  startDate     DateTime @map("start_date")
+  endDate       DateTime @map("end_date")
+
+  status        StaffAssignmentStatus @default(PROPOSED)
+
+  agreedRate    Decimal? @db.Decimal(12, 2) @map("agreed_rate")
+  currency      String   @default("NPR")
+
+  confirmedAt   DateTime? @map("confirmed_at")
+  confirmedById String?  @map("confirmed_by_id")
+
+  notes         String?
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  staff         StaffProfile @relation(fields: [staffId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, tripId])
+  @@index([workspaceId, staffId])
+  @@index([workspaceId, startDate, endDate])
+  @@index([workspaceId, status])
+  @@map("staff_assignments")
+}
+
+enum ResourceType {
+  VEHICLE
+  EQUIPMENT
+  OTHER
+}
+
+enum ResourceStatus {
+  AVAILABLE
+  ASSIGNED
+  MAINTENANCE
+  INACTIVE
+}
+
+model Resource {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+
+  name          String
+  type          ResourceType
+  code          String?
+
+  // Vehicle-specific
+  vehicleType   String?  @map("vehicle_type")
+  licensePlate  String?  @map("license_plate")
+  capacity      Int?
+
+  // Equipment-specific
+  quantity      Int?
+
+  status        ResourceStatus @default(AVAILABLE)
+  notes         String?
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignments   ResourceAssignment[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId, type])
+  @@index([workspaceId, status])
+  @@map("resources")
+}
+
+enum ResourceAssignmentStatus {
+  PROPOSED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model ResourceAssignment {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  tripId        String   @map("trip_id")
+  resourceId    String   @map("resource_id")
+
+  startDate     DateTime @map("start_date")
+  endDate       DateTime @map("end_date")
+
+  status        ResourceAssignmentStatus @default(PROPOSED)
+
+  notes         String?
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  resource      Resource  @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, tripId])
+  @@index([workspaceId, resourceId])
+  @@index([workspaceId, startDate, endDate])
+  @@map("resource_assignments")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 6 — Suppliers & Logistics
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum SupplierCategory {
+  ACCOMMODATION
+  TRANSPORT
+  FOOD
+  PERMIT
+  EQUIPMENT
+  INSURANCE
+  OTHER
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  BLACKLISTED
+  PENDING_REVIEW
+}
+
+model Supplier {
+  id              String   @id @default(uuid())
+  workspaceId     String   @map("workspace_id")
+
+  name            String
+  code            String?
+  category        SupplierCategory
+  region          String?   // e.g., "Khumbu", "Annapurna", "Kathmandu"
+
+  // Contact
+  contactName     String?  @map("contact_name")
+  email           String?
+  phone           String?
+  whatsapp        String?
+  address         String?
+
+  // Business
+  taxId           String?  @map("tax_id")
+  paymentTerms    String?  @map("payment_terms")
+  currency        String   @default("NPR")
+
+  status          SupplierStatus @default(ACTIVE)
+  rating          Int?     // 1-5, manual
+  notes           String?
+  metadata        Json     @default("{}")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  rates           SupplierRate[]
+  bookings        SupplierBooking[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId, category])
+  @@index([workspaceId, region])
+  @@index([workspaceId, status])
+  @@map("suppliers")
+}
+
+model SupplierRate {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  supplierId    String   @map("supplier_id")
+
+  serviceType   String   @map("service_type")   // e.g., "room_night", "vehicle_day", "permit"
+  description   String?
+  amount        Decimal  @db.Decimal(12, 2)
+  currency      String   @default("NPR")
+  unit          String                            // e.g., "per_person", "per_room", "per_vehicle"
+
+  validFrom     DateTime @map("valid_from")
+  validTo       DateTime? @map("valid_to")
+
+  cancellationPolicy String? @map("cancellation_policy")
+  notes         String?
+  metadata      Json     @default("{}")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  supplier      Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, supplierId])
+  @@index([workspaceId, validTo])
+  @@map("supplier_rates")
+}
+
+enum SupplierBookingStatus {
+  INQUIRY
+  REQUESTED
+  QUOTED
+  BOOKED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model SupplierBooking {
+  id              String   @id @default(uuid())
+  workspaceId     String   @map("workspace_id")
+  tripId          String   @map("trip_id")
+  supplierId      String   @map("supplier_id")
+  itineraryDayId  String?  @map("itinerary_day_id")
+
+  // What is being booked
+  serviceType     SupplierCategory @map("service_type")
+  description     String
+  code            String?  // supplier's own reference
+
+  // When
+  serviceDate     DateTime @map("service_date")
+  endDate         DateTime? @map("end_date")
+  startTime       String?  @map("start_time")
+  endTime         String?  @map("end_time")
+
+  // Quantity
+  quantity        Int      @default(1)
+  unit            String?  // "rooms", "vehicles", "seats"
+
+  // Cost tracking — three states
+  estimatedCost   Decimal? @db.Decimal(12, 2) @map("estimated_cost")
+  confirmedCost   Decimal? @db.Decimal(12, 2) @map("confirmed_cost")
+  actualCost      Decimal? @db.Decimal(12, 2) @map("actual_cost")
+  currency        String   @default("NPR")
+
+  // Status
+  status          SupplierBookingStatus @default(INQUIRY)
+  confirmationNumber String? @map("confirmation_number")
+  confirmedAt     DateTime? @map("confirmed_at")
+  confirmedById   String?  @map("confirmed_by_id")
+
+  // Cancellation
+  cancellationPolicy String? @map("cancellation_policy")
+  cancellationDeadline DateTime? @map("cancellation_deadline")
+  cancelledAt     DateTime? @map("cancelled_at")
+  cancelledById   String?  @map("cancelled_by_id")
+  cancellationReason String? @map("cancellation_reason")
+
+  notes           String?
+  metadata        Json     @default("{}")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip            Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  supplier        Supplier  @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  itineraryDay    ItineraryDay? @relation(fields: [itineraryDayId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, tripId])
+  @@index([workspaceId, supplierId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, serviceDate])
+  @@index([workspaceId, cancellationDeadline])
+  @@map("supplier_bookings")
+}
