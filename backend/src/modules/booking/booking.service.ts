@@ -1,6 +1,6 @@
 import type { Prisma } from "@prisma/client";
-import type { UpdateBookingInput, ListBookingsQuery } from '@tripchange/shared';
-import type { BookingDetail, ListBookingsResult, TripDetail } from '@tripchange/shared';
+import type { UpdateBookingInput, ListBookingsQuery } from '@trailcomand/shared';
+import type { BookingDetail, ListBookingsResult, TripDetail } from '@trailcomand/shared';
 
 import { AppError } from "../../lib/errors.js";
 import { logAuditEvent } from "../../lib/audit.js";

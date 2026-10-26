@@ -1,4 +1,4 @@
-import type { UserProfile } from '@tripchange/shared';
+import type { UserProfile } from '@trailcomand/shared';
 import { create } from 'zustand';
 
 interface AuthState {
@@ -18,3 +18,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   setLoading: (isLoading) => set({ isLoading }),
   clearUser: () => set({ user: null, isAuthenticated: false, isLoading: false }),
 }));
+
+/** Guides only need the field tools; office roles keep the full workspace. */
+export const isGuideRole = (roleName: string | undefined) => roleName?.toLowerCase() === 'guide';

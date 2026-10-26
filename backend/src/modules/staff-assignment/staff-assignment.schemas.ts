@@ -12,4 +12,4 @@ export {
   type ListStaffAssignmentsQuery,
   type ChangeStaffAssignmentStatusInput,
   type CheckAvailabilityQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

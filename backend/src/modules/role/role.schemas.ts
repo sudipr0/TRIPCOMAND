@@ -3,4 +3,4 @@ export {
   updateRoleSchema,
   type CreateRoleInput,
   type UpdateRoleInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

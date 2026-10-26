@@ -8,7 +8,7 @@ import type {
   ListCustomersQuery,
   CustomerDetail,
   ListCustomersResult,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 function toCustomerDetail(customer: {
   id: string;

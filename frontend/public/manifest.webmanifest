@@ -1,0 +1,19 @@
+{
+  "name": "TrailComand — My Trip",
+  "short_name": "My Trip",
+  "description": "Your itinerary, updates, documents and emergency contacts for the trip.",
+  "start_url": "/portal/view/",
+  "scope": "/portal/",
+  "display": "standalone",
+  "background_color": "#faf9f7",
+  "theme_color": "#2b7a55",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/portal-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

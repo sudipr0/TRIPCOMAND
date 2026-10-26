@@ -14,7 +14,7 @@ import type {
   SupplierAlternative,
   ListSuppliersResult,
   ListSupplierRatesResult,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 function toSupplierDetail(
   s: Prisma.SupplierGetPayload<object>,

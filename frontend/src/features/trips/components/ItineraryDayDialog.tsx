@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ItineraryDayDetail } from '@tripchange/shared';
+import type { ItineraryDayDetail } from '@trailcomand/shared';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,7 +35,11 @@ export function ItineraryDayDialog({ tripId, day, defaultDayNumber, open, onOpen
   const [title, setTitle] = useState(day?.title ?? '');
   const [description, setDescription] = useState(day?.description ?? '');
   const [location, setLocation] = useState(day?.location ?? '');
+  const [startLocation, setStartLocation] = useState(day?.startLocation ?? '');
+  const [endLocation, setEndLocation] = useState(day?.endLocation ?? '');
   const [altitude, setAltitude] = useState(day?.altitude?.toString() ?? '');
+  const [elevationGain, setElevationGain] = useState(day?.elevationGain?.toString() ?? '');
+  const [distanceKm, setDistanceKm] = useState(day?.distanceKm ?? '');
   const [walkingHours, setWalkingHours] = useState(day?.walkingHours ?? '');
   const [startTime, setStartTime] = useState(day?.startTime ?? '');
   const [endTime, setEndTime] = useState(day?.endTime ?? '');
@@ -57,7 +61,11 @@ export function ItineraryDayDialog({ tripId, day, defaultDayNumber, open, onOpen
       title: title.trim(),
       description: orNull(description),
       location: orNull(location),
+      startLocation: orNull(startLocation),
+      endLocation: orNull(endLocation),
       altitude: numberOrNull(altitude, true),
+      elevationGain: numberOrNull(elevationGain, true),
+      distanceKm: numberOrNull(distanceKm),
       walkingHours: numberOrNull(walkingHours),
       startTime: orNull(startTime),
       endTime: orNull(endTime),
@@ -96,11 +104,23 @@ export function ItineraryDayDialog({ tripId, day, defaultDayNumber, open, onOpen
             <FormField htmlFor="day-location" label="Location">
               <Input id="day-location" maxLength={200} value={location} onChange={(event) => setLocation(event.target.value)} />
             </FormField>
+            <FormField htmlFor="day-start-location" label="Start location">
+              <Input id="day-start-location" maxLength={200} value={startLocation} onChange={(event) => setStartLocation(event.target.value)} />
+            </FormField>
+            <FormField htmlFor="day-end-location" label="End location">
+              <Input id="day-end-location" maxLength={200} value={endLocation} onChange={(event) => setEndLocation(event.target.value)} />
+            </FormField>
             <FormField htmlFor="day-accommodation" label="Accommodation">
               <Input id="day-accommodation" maxLength={200} value={accommodation} onChange={(event) => setAccommodation(event.target.value)} />
             </FormField>
             <FormField htmlFor="day-altitude" label="Altitude (m)">
               <Input id="day-altitude" type="number" min={0} max={10000} className="tabular-nums" value={altitude} onChange={(event) => setAltitude(event.target.value)} />
+            </FormField>
+            <FormField htmlFor="day-elevation-gain" label="Elevation gain (m)">
+              <Input id="day-elevation-gain" type="number" min={-1000} max={5000} className="tabular-nums" value={elevationGain} onChange={(event) => setElevationGain(event.target.value)} />
+            </FormField>
+            <FormField htmlFor="day-distance" label="Distance (km)">
+              <Input id="day-distance" type="number" min={0} max={1000} step={0.1} className="tabular-nums" value={distanceKm} onChange={(event) => setDistanceKm(event.target.value)} />
             </FormField>
             <FormField htmlFor="day-walking" label="Walking hours">
               <Input id="day-walking" type="number" min={0} max={24} step={0.5} className="tabular-nums" value={walkingHours} onChange={(event) => setWalkingHours(event.target.value)} />

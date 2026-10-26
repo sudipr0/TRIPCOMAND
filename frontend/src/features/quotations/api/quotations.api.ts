@@ -7,7 +7,7 @@ import type {
   QuotationDetail,
   TripDetail,
   UpdateQuotationInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 import { apiClient, unwrap, type ApiEnvelope } from "@/lib/api-client";
 

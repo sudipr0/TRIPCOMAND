@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createTrekTemplateDaySchema, updateTrekTemplateDaySchema,
   type CreateTrekTemplateDayInput, type TrekTemplateDayDetail,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 import { useState, type ReactNode } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';

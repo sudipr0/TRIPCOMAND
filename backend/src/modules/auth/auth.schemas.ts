@@ -7,4 +7,4 @@ export {
   type LoginInput,
   type ForgotPasswordInput,
   type ResetPasswordInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

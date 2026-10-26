@@ -1,8 +1,8 @@
 import { toast } from 'sonner';
-import type { CreateQuotationInput } from '@tripchange/shared';
-import type { UpdateQuotationInput } from '@tripchange/shared';
+import type { CreateQuotationInput } from '@trailcomand/shared';
+import type { UpdateQuotationInput } from '@trailcomand/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ListQuotationsQuery, QuotationDetail } from '@tripchange/shared';
+import type { ListQuotationsQuery, QuotationDetail } from '@trailcomand/shared';
 
 import { extractError } from '@/lib/api-client';
 import { useWorkspaceStore } from '@/stores/workspace.store';

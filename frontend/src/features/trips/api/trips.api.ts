@@ -4,6 +4,7 @@ import type {
   ChangeTripStatusInput,
   CreateItineraryDayInput,
   CreateTripTravelerInput,
+  DayStatusValue,
   ItineraryDayDetail,
   ItineraryVersionDetail,
   ListTripsQuery,
@@ -17,7 +18,7 @@ import type {
   UpdateItineraryDayInput,
   UpdateTripInput,
   UpdateTripTravelerInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 import { apiClient, unwrap, type ApiEnvelope } from "@/lib/api-client";
 
@@ -179,6 +180,19 @@ export const tripsApi = {
       await apiClient.patch<ApiEnvelope<ItineraryDayDetail>>(
         `${itinerary(workspaceId, tripId)}/${dayId}`,
         input,
+      ),
+    ),
+
+  updateDayStatus: async (
+    workspaceId: string,
+    tripId: string,
+    dayId: string,
+    status: DayStatusValue,
+  ) =>
+    unwrap(
+      await apiClient.patch<ApiEnvelope<ItineraryDayDetail>>(
+        `${itinerary(workspaceId, tripId)}/${dayId}/status`,
+        { status },
       ),
     ),
 

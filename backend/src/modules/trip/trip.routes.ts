@@ -1,5 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
-import { PERMISSION_CODES } from "@tripchange/shared";
+import { PERMISSION_CODES } from "@trailcomand/shared";
 
 import { TripService } from "./trip.service.js";
 import { authMiddleware } from "../../middleware/auth.js";

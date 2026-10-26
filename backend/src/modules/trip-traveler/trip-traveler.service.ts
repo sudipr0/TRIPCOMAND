@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
-import type { TripTravelerDetail } from '@tripchange/shared';
-import type { CreateTripTravelerInput } from '@tripchange/shared';
-import type { UpdateTripTravelerInput } from '@tripchange/shared';
+import type { TripTravelerDetail } from '@trailcomand/shared';
+import type { CreateTripTravelerInput } from '@trailcomand/shared';
+import type { UpdateTripTravelerInput } from '@trailcomand/shared';
 
 import { AppError } from "../../lib/errors.js";
 import { rawPrisma } from "../../lib/prisma.js";

@@ -9,7 +9,7 @@ import type {
   ListDestinationsQuery,
   DestinationDetail,
   ListDestinationsResult,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 function toDestinationDetail(destination: {
   id: string;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { StaffAssignmentDetail, TripDetail } from '@tripchange/shared';
+import type { StaffAssignmentDetail, TripDetail } from '@trailcomand/shared';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';

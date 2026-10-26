@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { rawPrisma } from "../lib/prisma.js";
 import { AppError } from "../lib/errors.js";
 import { asyncLocalStorage } from "../lib/async-context.js";
-import type { PermissionCode, TenantContext } from "@tripchange/shared";
+import type { PermissionCode, TenantContext } from "@trailcomand/shared";
 
 declare module "fastify" {
   interface FastifyRequest {

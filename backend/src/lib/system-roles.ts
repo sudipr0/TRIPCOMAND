@@ -3,7 +3,7 @@ import {
   ROLE_PERMISSIONS,
   type SystemRoleName,
   type PermissionCode,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 export async function createSystemRolesForWorkspace(
   workspaceId: string,

@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Least privilege: CI only needs to read the repository.
+permissions:
+  contents: read
+
+# Superseded runs on the same ref are cancelled to save runner minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        # --frozen-lockfile replaces the dev-setuid pnpm's no-lockfile default,
+        # so the committed pnpm-lock.yaml is always honoured in CI.
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared workspace package
+        # @trailcomand/shared resolves to packages/shared/dist, which is not
+        # committed, so it must be compiled before typecheck and tests.
+        run: pnpm --filter @trailcomand/shared build
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test

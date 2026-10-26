@@ -1,5 +1,5 @@
-import type { SupplierRateDetail } from '@tripchange/shared';
-import { PERMISSION_CODES } from '@tripchange/shared';
+import type { SupplierRateDetail } from '@trailcomand/shared';
+import { PERMISSION_CODES } from '@trailcomand/shared';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 

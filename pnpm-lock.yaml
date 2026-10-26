@@ -44,7 +44,7 @@ importers:
       '@prisma/client':
         specifier: ^5.22.0
         version: 5.22.0(prisma@5.22.0)
-      '@tripchange/shared':
+      '@trailcomand/shared':
         specifier: workspace:*
         version: link:../packages/shared
       argon2:
@@ -129,7 +129,7 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.51.0
         version: 5.104.5(@types/react@18.3.31)(react@18.3.1)
-      '@tripchange/shared':
+      '@trailcomand/shared':
         specifier: workspace:*
         version: link:../packages/shared
       axios:

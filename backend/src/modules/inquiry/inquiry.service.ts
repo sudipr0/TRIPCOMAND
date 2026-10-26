@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { Prisma as PrismaNs } from "@prisma/client";
-import type { CreateInquiryInput } from '@tripchange/shared';
-import type { UpdateInquiryInput } from '@tripchange/shared';
-import type { ListInquiriesResult } from '@tripchange/shared';
-import type { ListInquiriesQuery, InquiryDetail } from '@tripchange/shared';
+import type { CreateInquiryInput } from '@trailcomand/shared';
+import type { UpdateInquiryInput } from '@trailcomand/shared';
+import type { ListInquiriesResult } from '@trailcomand/shared';
+import type { ListInquiriesQuery, InquiryDetail } from '@trailcomand/shared';
 
 import { AppError } from "../../lib/errors.js";
 import { logAuditEvent } from "../../lib/audit.js";

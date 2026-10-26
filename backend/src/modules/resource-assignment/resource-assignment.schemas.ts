@@ -12,4 +12,4 @@ export {
   type ListResourceAssignmentsQuery,
   type ChangeResourceAssignmentStatusInput,
   type CheckAvailabilityQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

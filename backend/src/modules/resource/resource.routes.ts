@@ -4,7 +4,7 @@ import { authMiddleware } from "../../middleware/auth.js";
 import { tenancyMiddleware } from "../../middleware/tenancy.js";
 import { permissionMiddleware } from "../../middleware/permission.js";
 import { validateBody, validateQuery } from "../../middleware/validation.js";
-import { PERMISSION_CODES } from "@tripchange/shared";
+import { PERMISSION_CODES } from "@trailcomand/shared";
 import {
   createResourceSchema,
   updateResourceSchema,

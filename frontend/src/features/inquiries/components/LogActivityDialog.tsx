@@ -1,4 +1,4 @@
-import { logInquiryActivitySchema } from '@tripchange/shared';
+import { logInquiryActivitySchema } from '@trailcomand/shared';
 import { useState, type ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';

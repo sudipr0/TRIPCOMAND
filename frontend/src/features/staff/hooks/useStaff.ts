@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateStaffDocumentInput, CreateStaffInput, ListStaffInput, UpdateStaffInput, VerifyStaffDocumentInput } from '@tripchange/shared';
+import type { CreateStaffDocumentInput, CreateStaffInput, ListStaffInput, UpdateStaffInput, VerifyStaffDocumentInput } from '@trailcomand/shared';
 import { toast } from 'sonner';
 
 import { staffApi } from '@/features/staff/api/staff.api';

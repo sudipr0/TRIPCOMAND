@@ -1,4 +1,4 @@
-import type { InquiryDetail, MemberDetail } from '@tripchange/shared';
+import type { InquiryDetail, MemberDetail } from '@trailcomand/shared';
 import { Link } from 'react-router-dom';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';

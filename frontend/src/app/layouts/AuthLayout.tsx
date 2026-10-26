@@ -34,7 +34,7 @@ export function AuthLayout() {
       <section className="hidden min-h-screen bg-bg-subtle px-10 py-10 lg:flex lg:flex-col">
         <Link to="/login" className="inline-flex w-fit items-center gap-2 text-lg font-semibold tracking-tight text-fg">
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-accent text-sm text-accent-fg">T</span>
-          TripPilot
+          TrailComand
         </Link>
         <div className="mt-auto max-w-md pb-16">
           <div className="mb-6 h-px w-16 bg-accent" />
@@ -47,7 +47,7 @@ export function AuthLayout() {
           <div className="mb-6 lg:hidden">
             <Link to="/login" className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-fg">
               <span className="flex h-8 w-8 items-center justify-center rounded-md bg-accent text-sm text-accent-fg">T</span>
-              TripPilot
+              TrailComand
             </Link>
           </div>
           <div className="mb-5">
@@ -59,7 +59,7 @@ export function AuthLayout() {
           </div>
           <div className="mt-5 text-center text-sm text-fg-muted">
             {pathname === '/login' ? (
-              <>New to TripPilot? <Link to="/register" className="font-medium text-accent hover:text-accent-hover hover:underline">Create an account</Link></>
+              <>New to TrailComand? <Link to="/register" className="font-medium text-accent hover:text-accent-hover hover:underline">Create an account</Link></>
             ) : pathname === '/register' ? (
               <>Already have an account? <Link to="/login" className="font-medium text-accent hover:text-accent-hover hover:underline">Sign in</Link></>
             ) : null}

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createInquirySchema, INQUIRY_PRIORITIES, INQUIRY_STATUSES, updateInquirySchema, type CreateInquiryInput, type InquiryDetail, type UpdateInquiryInput } from '@tripchange/shared';
+import { createInquirySchema, INQUIRY_PRIORITIES, INQUIRY_STATUSES, updateInquirySchema, type CreateInquiryInput, type InquiryDetail, type UpdateInquiryInput } from '@trailcomand/shared';
 import { useState, type ReactNode } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';

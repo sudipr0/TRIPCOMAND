@@ -9,7 +9,7 @@ import type {
   PaymentDetail,
   ListPaymentsResult,
   BookingDetail,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 function toPaymentDetail(
   payment: Prisma.PaymentGetPayload<object>,

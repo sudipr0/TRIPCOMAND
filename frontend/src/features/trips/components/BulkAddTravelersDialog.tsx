@@ -1,4 +1,4 @@
-import type { CreateTripTravelerInput } from '@tripchange/shared';
+import type { CreateTripTravelerInput } from '@trailcomand/shared';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 

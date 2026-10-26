@@ -1,4 +1,4 @@
-import type { QuotationDetail } from '@tripchange/shared';
+import type { QuotationDetail } from '@trailcomand/shared';
 import { useNavigate } from 'react-router-dom';
 
 import { InfoIcon } from '@/components/icons';

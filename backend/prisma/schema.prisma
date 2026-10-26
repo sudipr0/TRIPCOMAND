@@ -57,6 +57,12 @@ model Workspace {
   suppliers         Supplier[]
   supplierRates     SupplierRate[]
   supplierBookings  SupplierBooking[]
+  fieldCheckIns     FieldCheckIn[]
+  fieldReports      FieldReport[]
+  disruptions       Disruption[]
+  tripDocuments     TripDocument[]
+  portalAccesses    PortalAccess[]
+  portalUpdateAcks  PortalUpdateAcknowledgement[]
   @@index([slug])
   @@index([status])
   @@map("workspaces")
@@ -241,6 +247,7 @@ model StaffProfile {
   documents     StaffDocument[]
   tripsAsLeadGuide Trip[] @relation("TripsAsLeadGuide")
   assignments   StaffAssignment[]
+  checkIns      FieldCheckIn[]
 
   @@index([workspaceId, staffType])
   @@index([workspaceId, status])
@@ -748,6 +755,12 @@ model Trip {
   staffAssignments   StaffAssignment[]
   resourceAssignments ResourceAssignment[]
   supplierBookings  SupplierBooking[]
+  fieldCheckIns     FieldCheckIn[]
+  fieldReports      FieldReport[]
+  disruptions       Disruption[]
+  documents         TripDocument[]
+  portalAccesses    PortalAccess[]
+  portalUpdateAcks  PortalUpdateAcknowledgement[]
 
   @@unique([workspaceId, tripNumber])
   @@index([workspaceId, status])
@@ -790,6 +803,10 @@ model TripTraveler {
   trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
   customer      Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
+  documents     TripDocument[]
+  portalAccess  PortalAccess?
+  portalUpdateAcks PortalUpdateAcknowledgement[]
+
   @@index([workspaceId, tripId])
   @@index([workspaceId, customerId])
   @@map("trip_travelers")
@@ -803,8 +820,16 @@ model ItineraryDay {
   dayNumber     Int      @map("day_number")
   title         String
   description   String?
+  // Legacy single label. Traveller-facing screens prefer start/end location below.
   location      String?
+  startLocation String?  @map("start_location")
+  endLocation   String?  @map("end_location")
+  // Destination altitude in metres — not the same thing as `elevationGain`.
   altitude      Int?
+  // Climb for the day in metres. Null when the route data does not state it.
+  elevationGain Int?     @map("elevation_gain")
+  // Walking distance in kilometres, one decimal place.
+  distanceKm    Decimal? @db.Decimal(5, 1) @map("distance_km")
   startTime     String?  @map("start_time")
   endTime       String?  @map("end_time")
   walkingHours  Decimal? @db.Decimal(3, 1) @map("walking_hours")
@@ -815,12 +840,18 @@ model ItineraryDay {
   clientVisible Boolean  @default(true) @map("client_visible")
   internalNotes String?  @map("internal_notes")
 
+  // Live day status for the trip timeline. Stored (not derived) so the office can
+  // override what the dates and field reports imply.
+  status        DayStatus @default(PENDING)
+
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
   supplierBookings SupplierBooking[]
+  reports       FieldReport[]
+  disruptions   Disruption[]
 
   @@unique([tripId, dayNumber])
   @@index([workspaceId, tripId])
@@ -1140,4 +1171,325 @@ model SupplierBooking {
   @@index([workspaceId, serviceDate])
   @@index([workspaceId, cancellationDeadline])
   @@map("supplier_bookings")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 7 — Field Operations (Guide mobile check-ins & reports)
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum CheckInType {
+  START
+  MID
+  END
+  EMERGENCY
+  DELAY
+  ISSUE
+}
+
+model FieldCheckIn {
+  id            String      @id @default(uuid())
+  workspaceId   String      @map("workspace_id")
+  tripId        String      @map("trip_id")
+  staffId       String      @map("staff_id")
+
+  checkInType   CheckInType @map("check_in_type")
+  location      String?
+  latitude      Decimal?    @db.Decimal(10, 6)
+  longitude     Decimal?    @db.Decimal(10, 6)
+  altitude      Int?
+
+  message       String?
+  photoUrls     String[]
+
+  // Offline Sync Tracking
+  recordedAt    DateTime    @map("recorded_at")
+  syncedAt      DateTime?   @map("synced_at")
+  clientId      String      @unique @map("client_id") // UUID from device
+
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  workspace     Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  staff         StaffProfile  @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, tripId])
+  @@index([workspaceId, staffId])
+  @@map("field_check_ins")
+}
+
+enum ReportType {
+  PROGRESS_UPDATE
+  DELAY
+  WEATHER
+  ROUTE_ISSUE
+  ACCOMMODATION_ISSUE
+  SUPPLIER_ISSUE
+  TRAVELER_ISSUE
+  SAFETY_CONCERN
+  EMERGENCY
+  OTHER
+}
+
+model FieldReport {
+  id            String      @id @default(uuid())
+  workspaceId   String      @map("workspace_id")
+  tripId        String      @map("trip_id")
+  reporterId    String      @map("reporter_id") // userId or staffId
+
+  reportType    ReportType      @map("report_type")
+  severity      InquiryPriority @default(MEDIUM)
+  description   String
+  location      String?
+  photoUrls     String[]
+
+  recordedAt    DateTime    @map("recorded_at")
+  syncedAt      DateTime?   @map("synced_at")
+  clientId      String      @unique @map("client_id")
+
+  // Which day the report belongs to; drives that day's timeline status.
+  itineraryDayId String?    @map("itinerary_day_id")
+
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  workspace     Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  itineraryDay  ItineraryDay? @relation(fields: [itineraryDayId], references: [id], onDelete: SetNull)
+  acknowledgedBy PortalUpdateAcknowledgement[]
+
+  @@index([workspaceId, tripId])
+  @@index([itineraryDayId])
+  @@map("field_reports")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 8 — Disruption impact analysis, recovery planning & task execution
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum DisruptionCategory {
+  WEATHER
+  ROUTE_CLOSURE
+  SUPPLIER_CANCELLATION
+  TRANSPORT_DELAY
+  STAFF_UNAVAILABLE
+  EQUIPMENT_ISSUE
+  TRAVELER_ISSUE
+  OTHER
+}
+
+enum DisruptionStatus {
+  REPORTED
+  ASSESSING
+  PLANNED
+  AWAITING_APPROVAL
+  EXECUTING
+  RESOLVED
+  CLOSED
+}
+
+model Disruption {
+  id               String           @id @default(uuid())
+  workspaceId      String           @map("workspace_id")
+  tripId           String           @map("trip_id")
+  disruptionNumber String           @map("disruption_number")
+
+  title       String
+  description String
+  category    DisruptionCategory
+  // InquiryPriority is the existing four-level priority enum used by this schema.
+  severity    InquiryPriority     @default(HIGH)
+  status      DisruptionStatus    @default(REPORTED)
+
+  reportedById String?   @map("reported_by_id")
+  reportedAt  DateTime  @default(now()) @map("reported_at")
+
+  resolvedAt DateTime? @map("resolved_at")
+  closedAt   DateTime? @map("closed_at")
+  rootCause  String?   @map("root_cause")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Which day the disruption affects; drives that day's timeline status.
+  itineraryDayId String? @map("itinerary_day_id")
+
+  workspace    Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip         Trip            @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  itineraryDay ItineraryDay?   @relation(fields: [itineraryDayId], references: [id], onDelete: SetNull)
+  impacts      ImpactAssessment[]
+  recoveryPlan RecoveryPlan?
+
+  @@unique([workspaceId, disruptionNumber])
+  @@index([workspaceId, status])
+  @@index([itineraryDayId])
+  @@map("disruptions")
+}
+
+model ImpactAssessment {
+  id           String   @id @default(uuid())
+  disruptionId String   @map("disruption_id")
+
+  entityType String
+  entityId   String
+  entityName String
+  impactType String
+  confidence Int      @default(100)
+  reasoning  String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  disruption Disruption @relation(fields: [disruptionId], references: [id], onDelete: Cascade)
+
+  @@index([disruptionId])
+  @@map("impact_assessments")
+}
+
+model RecoveryPlan {
+  id           String   @id @default(uuid())
+  disruptionId String   @unique @map("disruption_id")
+
+  status        String   @default("DRAFT")
+  estimatedCost Decimal? @db.Decimal(12, 2) @map("estimated_cost")
+  notes         String?
+
+  approvedById String?   @map("approved_by_id")
+  approvedAt   DateTime? @map("approved_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  disruption Disruption   @relation(fields: [disruptionId], references: [id], onDelete: Cascade)
+  tasks      RecoveryTask[]
+
+  @@map("recovery_plans")
+}
+
+model RecoveryTask {
+  id          String   @id @default(uuid())
+  planId      String   @map("plan_id")
+
+  title        String
+  description  String?
+  assignedToId String?  @map("assigned_to_id")
+  dueAt        DateTime? @map("due_at")
+  status       String   @default("PENDING")
+
+  evidenceUrl String?   @map("evidence_url")
+  completedAt DateTime? @map("completed_at")
+
+  plan RecoveryPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@map("recovery_tasks")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 10 — Client portal & documents
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum DocumentType {
+  PASSPORT
+  INSURANCE
+  VISA
+  VACCINATION
+  OTHER
+}
+
+model TripDocument {
+  id            String       @id @default(uuid())
+  workspaceId   String       @map("workspace_id")
+  tripId        String       @map("trip_id")
+  travelerId    String       @map("traveler_id")
+
+  documentType  DocumentType @map("document_type")
+  fileName      String       @map("file_name")
+  fileUrl       String       @map("file_url")
+
+  // User ID when uploaded by the office; null means the traveler uploaded it via the portal.
+  uploadedById  String?      @map("uploaded_by_id")
+  uploadedByTraveler Boolean @default(false) @map("uploaded_by_traveler")
+
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  traveler      TripTraveler @relation(fields: [travelerId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, tripId])
+  @@index([travelerId])
+  @@map("trip_documents")
+}
+
+enum PortalAccessStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+model PortalAccess {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  tripId        String   @map("trip_id")
+  travelerId    String   @unique @map("traveler_id")
+
+  token         String   @unique // Secure random string for magic link
+  status        PortalAccessStatus @default(ACTIVE)
+  expiresAt     DateTime @map("expires_at")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  lastLoginAt   DateTime? @map("last_login_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  traveler      TripTraveler @relation(fields: [travelerId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([workspaceId, tripId])
+  @@map("portal_access")
+}
+
+// ─────────────────────────────
+// Phase 10.6 — Traveller Command Center
+// ─────────────────────────────
+
+// A traveller confirming they have read a published trip update.
+ // 
+ // The update itself is a FieldReport of type PROGRESS_UPDATE: that is the only
+ // record in this schema that carries an agency-authored, client-visible message
+ // together with a status and a publication time. Acknowledgements point at it
+// directly so a row can never outlive or map to the wrong trip.
+model PortalUpdateAcknowledgement {
+  id          String   @id @default(uuid())
+  workspaceId String   @map("workspace_id")
+  tripId      String   @map("trip_id")
+  travelerId  String   @map("traveler_id")
+  updateId    String   @map("update_id")
+
+  acknowledgedAt DateTime @default(now()) @map("acknowledged_at")
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  trip      Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  traveler  TripTraveler @relation(fields: [travelerId], references: [id], onDelete: Cascade)
+  update    FieldReport  @relation(fields: [updateId], references: [id], onDelete: Cascade)
+
+  // One acknowledgement per traveller per update; makes a repeated POST a no-op.
+  @@unique([travelerId, updateId])
+  @@index([workspaceId, tripId])
+  @@index([updateId])
+  @@map("portal_update_acknowledgements")
+}
+
+// ─────────────────────────────
+// Phase 10.5 — Live trip timeline & day status
+// ─────────────────────────────
+
+// PENDING     not started yet
+// IN_PROGRESS today's day, currently running
+// COMPLETED   finished
+// DELAYED     running behind (e.g. a MEDIUM/LOW field report on the day)
+// PROBLEM     needs attention (e.g. a HIGH/URGENT report or a disruption)
+enum DayStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  PROBLEM
 }

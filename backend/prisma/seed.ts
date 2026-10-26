@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import * as argon2 from 'argon2';
 import { PrismaClient } from '@prisma/client';
-import { ROLE_PERMISSIONS, SYSTEM_ROLES } from '@tripchange/shared';
-import { ALL_PERMISSIONS, PERMISSION_CODES } from '@tripchange/shared';
-import { type PermissionCode, type SystemRoleName } from '@tripchange/shared';
+import { ROLE_PERMISSIONS, SYSTEM_ROLES } from '@trailcomand/shared';
+import { ALL_PERMISSIONS, PERMISSION_CODES } from '@trailcomand/shared';
+import { type PermissionCode, type SystemRoleName } from '@trailcomand/shared';
 
 const prisma = new PrismaClient();
 
@@ -213,11 +213,11 @@ async function main() {
   const demoWorkspace = await prisma.workspace.upsert({
     where: { slug: 'demo' },
     update: {
-      name: 'Demo Workspace',
+      name: 'TrailComand Demo',
       status: 'ACTIVE',
     },
     create: {
-      name: 'Demo Workspace',
+      name: 'TrailComand Demo',
       slug: 'demo',
       status: 'ACTIVE',
     },

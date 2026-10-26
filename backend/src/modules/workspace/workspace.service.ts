@@ -6,7 +6,7 @@ import type {
   UpdateWorkspaceInput,
   WorkspaceSummary,
   PermissionCode,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 export class WorkspaceService {
   static async listUserWorkspaces(userId: string): Promise<WorkspaceSummary[]> {

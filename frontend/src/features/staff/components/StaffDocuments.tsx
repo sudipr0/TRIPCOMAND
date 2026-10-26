@@ -1,4 +1,4 @@
-import { PERMISSION_CODES, type StaffDocumentDetail } from '@tripchange/shared';
+import { PERMISSION_CODES, type StaffDocumentDetail } from '@trailcomand/shared';
 
 import { ExternalLinkIcon, FileIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';

@@ -5,7 +5,7 @@ export {
   updateMemberRoleSchema,
   type InviteMemberInput,
   type UpdateMemberRoleInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 export const acceptInviteSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),

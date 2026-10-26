@@ -1,4 +1,4 @@
-import type { DestinationDetail } from '@tripchange/shared';
+import type { DestinationDetail } from '@trailcomand/shared';
 
 import { DestinationIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';

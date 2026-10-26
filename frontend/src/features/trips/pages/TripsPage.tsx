@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { ListTripsQuery, TripDetail, TripStatus } from '@tripchange/shared';
+import type { ListTripsQuery, TripDetail, TripStatus } from '@trailcomand/shared';
 
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

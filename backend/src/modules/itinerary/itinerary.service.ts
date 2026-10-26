@@ -1,9 +1,10 @@
 import type { Prisma } from "@prisma/client";
-import type { ItineraryDayDetail } from '@tripchange/shared';
-import type { PublishItineraryInput } from '@tripchange/shared';
-import type { ItineraryVersionDetail } from '@tripchange/shared';
-import type { CreateItineraryDayInput } from '@tripchange/shared';
-import type { UpdateItineraryDayInput } from '@tripchange/shared';
+import type { ItineraryDayDetail } from '@trailcomand/shared';
+import type { PublishItineraryInput } from '@trailcomand/shared';
+import type { ItineraryVersionDetail } from '@trailcomand/shared';
+import type { DayStatusValue } from '@trailcomand/shared';
+import type { CreateItineraryDayInput } from '@trailcomand/shared';
+import type { UpdateItineraryDayInput } from '@trailcomand/shared';
 
 import { AppError } from "../../lib/errors.js";
 import { rawPrisma } from "../../lib/prisma.js";
@@ -23,7 +24,11 @@ function toDayDetail(d: Prisma.ItineraryDayGetPayload<object>): ItineraryDayDeta
     title: d.title,
     description: d.description,
     location: d.location,
+    startLocation: d.startLocation,
+    endLocation: d.endLocation,
     altitude: d.altitude,
+    elevationGain: d.elevationGain,
+    distanceKm: d.distanceKm ? d.distanceKm.toString() : null,
     startTime: d.startTime,
     endTime: d.endTime,
     walkingHours: d.walkingHours ? d.walkingHours.toString() : null,
@@ -32,6 +37,7 @@ function toDayDetail(d: Prisma.ItineraryDayGetPayload<object>): ItineraryDayDeta
     activities: d.activities,
     clientVisible: d.clientVisible,
     internalNotes: d.internalNotes,
+    status: d.status,
     createdAt: d.createdAt.toISOString(),
     updatedAt: d.updatedAt.toISOString(),
   };
@@ -63,7 +69,11 @@ function toUncheckedDay(
     ...(input.title !== undefined ? { title: input.title } : {}),
     ...(input.description !== undefined ? { description: input.description ?? null } : {}),
     ...(input.location !== undefined ? { location: input.location ?? null } : {}),
+    ...(input.startLocation !== undefined ? { startLocation: input.startLocation ?? null } : {}),
+    ...(input.endLocation !== undefined ? { endLocation: input.endLocation ?? null } : {}),
     ...(input.altitude !== undefined ? { altitude: input.altitude ?? null } : {}),
+    ...(input.elevationGain !== undefined ? { elevationGain: input.elevationGain ?? null } : {}),
+    ...(input.distanceKm !== undefined ? { distanceKm: input.distanceKm ?? null } : {}),
     ...(input.startTime !== undefined ? { startTime: input.startTime ?? null } : {}),
     ...(input.endTime !== undefined ? { endTime: input.endTime ?? null } : {}),
     ...(input.walkingHours !== undefined ? { walkingHours: input.walkingHours ?? null } : {}),
@@ -251,13 +261,49 @@ export class ItineraryService {
     return toDayDetail(updated);
   }
 
+  /**
+   * Live timeline status, editable at any point in the trip's life (unlike the
+   * content edits above, which are locked once planning ends). A guide finishing
+   * Day 1 while the trip is IN_PROGRESS is the normal case, so this deliberately
+   * does not check EDITABLE_STATUSES.
+   */
+  static async updateDayStatus(
+    workspaceId: string,
+    userId: string,
+    tripId: string,
+    dayId: string,
+    status: DayStatusValue,
+  ): Promise<ItineraryDayDetail> {
+    const day = await ItineraryRepository.findDayById(dayId, workspaceId);
+    if (!day || day.tripId !== tripId) {
+      throw AppError.notFound("Itinerary day not found");
+    }
+
+    const updated = await ItineraryRepository.updateDay(dayId, workspaceId, { status });
+
+    await logAuditEvent({
+      workspaceId,
+      userId,
+      action: "itinerary.day.status.updated",
+      entityType: "itinerary_day",
+      entityId: dayId,
+      details: {
+        tripId,
+        dayNumber: day.dayNumber,
+        previousStatus: day.status,
+        status,
+      },
+    });
+
+    return toDayDetail(updated);
+  }
+
   static async deleteDay(
     workspaceId: string,
     userId: string,
     tripId: string,
     dayId: string,
-  ): Promise<{ success: true; id: string }> {
-    const existing = await ItineraryRepository.findDayById(dayId, workspaceId);
+  ): Promise<{ success: true; id: string }> {    const existing = await ItineraryRepository.findDayById(dayId, workspaceId);
     if (!existing || existing.tripId !== tripId) {
       throw AppError.notFound("Itinerary day not found");
     }

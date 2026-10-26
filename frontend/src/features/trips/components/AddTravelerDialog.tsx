@@ -1,4 +1,4 @@
-import type { TripTravelerDetail } from '@tripchange/shared';
+import type { TripTravelerDetail } from '@trailcomand/shared';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

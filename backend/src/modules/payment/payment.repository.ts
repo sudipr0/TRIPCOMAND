@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import type { ListPaymentsQuery } from "@tripchange/shared";
+import type { ListPaymentsQuery } from "@trailcomand/shared";
 import { prisma } from "../../lib/prisma.js";
 
 export class PaymentRepository {

@@ -1,4 +1,4 @@
-import type { TrekTemplateDetail } from '@tripchange/shared';
+import type { TrekTemplateDetail } from '@trailcomand/shared';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

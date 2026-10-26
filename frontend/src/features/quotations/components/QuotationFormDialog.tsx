@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createQuotationSchema, updateQuotationSchema,
   type CreateQuotationInput, type InquiryDetail, type QuotationDetail, type UpdateQuotationInput,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';

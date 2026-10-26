@@ -1,4 +1,4 @@
-import { PERMISSION_CODES } from '@tripchange/shared';
+import { PERMISSION_CODES } from '@trailcomand/shared';
 
 import { AddIcon, BuildingsIcon, DeleteIcon, DestinationIcon, EditIcon, FileIcon, TemplateIcon, TripIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';

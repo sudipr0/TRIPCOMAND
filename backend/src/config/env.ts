@@ -16,7 +16,7 @@ const envSchema = z.object({
   SESSION_SECRET: z.string().min(16, 'SESSION_SECRET must be at least 16 characters long').default(isTest ? 'super-secret-test-session-token-12345' : ''),
   REDIS_URL: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().default('noreply@tripchange.app'),
+  EMAIL_FROM: z.string().default('noreply@trailcomand.app'),
 });
 
 const parsed = envSchema.safeParse(process.env);

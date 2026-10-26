@@ -12,7 +12,7 @@ import type {
   ListResourceAssignmentsResult,
   AvailabilityResult,
   CheckAvailabilityQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 type RepoAssignment = NonNullable<
   Awaited<ReturnType<typeof ResourceAssignmentRepository.findById>>

@@ -29,6 +29,10 @@ import { resourceRoutes } from './modules/resource/resource.routes.js';
 import { resourceAssignmentRoutes } from './modules/resource-assignment/resource-assignment.routes.js';
 import { supplierRoutes } from './modules/supplier/supplier.routes.js';
 import { supplierBookingRoutes } from './modules/supplier-booking/supplier-booking.routes.js';
+import { fieldRoutes } from './modules/field/field.routes.js';
+import { disruptionRoutes } from './modules/disruption/disruption.routes.js';
+import { financeRoutes } from './modules/finance/finance.routes.js';
+import { portalRoutes, portalAdminRoutes } from './modules/portal/index.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -69,7 +73,7 @@ export async function buildApp() {
   app.get('/health', async () => {
     return {
       status: 'ok',
-      service: 'tripchange-intelligence-backend',
+      service: 'trailcomand-backend',
       environment: env.NODE_ENV,
       timestamp: new Date().toISOString(),
     };
@@ -98,6 +102,15 @@ export async function buildApp() {
   await app.register(resourceAssignmentRoutes, { prefix: '/api/workspaces' });
   await app.register(supplierRoutes, { prefix: '/api/workspaces' });
   await app.register(supplierBookingRoutes, { prefix: '/api/workspaces' });
+  await app.register(fieldRoutes, { prefix: '/api/workspaces' });
+  await app.register(disruptionRoutes, { prefix: '/api/workspaces' });
+  // Keep the Phase 8 contract available under the versioned API namespace too.
+  await app.register(disruptionRoutes, { prefix: '/api/v1/workspaces' });
+  // Phase 9 — finance. Mounted on v1 so the dashboard and trip tab share one namespace.
+  await app.register(financeRoutes, { prefix: '/api/v1/workspaces' });
+  // Phase 10 — client portal. Public token routes and office admin routes are separate plugins.
+  await app.register(portalRoutes, { prefix: '/api/v1/portal' });
+  await app.register(portalAdminRoutes, { prefix: '/api/v1/workspaces' });
 
   return app;
 }

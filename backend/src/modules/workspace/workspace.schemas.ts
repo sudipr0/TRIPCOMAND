@@ -3,4 +3,4 @@ export {
   updateWorkspaceSchema,
   type CreateWorkspaceInput,
   type UpdateWorkspaceInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

@@ -1,4 +1,4 @@
-import type { CreateInquiryInput, InquiryActivityDetail, InquiryDetail, ListInquiriesQuery, ListInquiriesResult, LogInquiryActivityInput, MemberDetail, UpdateInquiryInput } from '@tripchange/shared';
+import type { CreateInquiryInput, InquiryActivityDetail, InquiryDetail, ListInquiriesQuery, ListInquiriesResult, LogInquiryActivityInput, MemberDetail, UpdateInquiryInput } from '@trailcomand/shared';
 
 import { apiClient, unwrap, type ApiEnvelope } from '@/lib/api-client';
 

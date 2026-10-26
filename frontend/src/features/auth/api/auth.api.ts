@@ -1,4 +1,4 @@
-import type { LoginInput, RegisterInput, ResetPasswordInput, UserProfile } from '@tripchange/shared';
+import type { LoginInput, RegisterInput, ResetPasswordInput, UserProfile } from '@trailcomand/shared';
 
 import { apiClient, unwrap } from '@/lib/api-client';
 

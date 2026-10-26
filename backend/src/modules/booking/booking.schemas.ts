@@ -10,4 +10,4 @@ export {
   type UpdateBookingInput,
   type ListBookingsQuery,
   type CancelBookingInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

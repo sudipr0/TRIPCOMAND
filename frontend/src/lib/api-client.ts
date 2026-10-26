@@ -22,9 +22,11 @@ export function unwrap<T>(response: AxiosResponse<ApiEnvelope<T>>) {
 }
 
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
+  // A request to a dead network can hang for minutes; fail fast so field syncs fall back to the queue.
+  timeout: 20_000,
 });
 
 apiClient.interceptors.request.use((config) => {

@@ -1,4 +1,4 @@
-import { ERROR_CODES, type ErrorCode } from "@tripchange/shared";
+import { ERROR_CODES, type ErrorCode } from "@trailcomand/shared";
 
 export class AppError extends Error {
   public readonly statusCode: number;

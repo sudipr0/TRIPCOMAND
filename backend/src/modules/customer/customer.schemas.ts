@@ -8,4 +8,4 @@ export {
   type UpdateCustomerInput,
   type ListCustomersQuery,
   type CustomerType,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

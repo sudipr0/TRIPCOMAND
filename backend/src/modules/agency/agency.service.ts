@@ -7,7 +7,7 @@ import type {
   UpdateAgencyProfileInput,
   UpdateAgencySettingsInput,
   AgencyProfileDetail,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 type WorkspaceSettings = Record<string, unknown>;
 

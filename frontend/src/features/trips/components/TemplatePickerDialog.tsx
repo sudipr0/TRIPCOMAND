@@ -1,4 +1,4 @@
-import type { TrekTemplateDetail } from '@tripchange/shared';
+import type { TrekTemplateDetail } from '@trailcomand/shared';
 import { useState } from 'react';
 
 import { SpinnerIcon, WarningIcon } from '@/components/icons';

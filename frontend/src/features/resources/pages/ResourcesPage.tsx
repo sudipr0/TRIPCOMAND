@@ -1,4 +1,4 @@
-import type { ListResourcesQuery, ResourceDetail, ResourceStatus, ResourceType } from '@tripchange/shared';
+import type { ListResourcesQuery, ResourceDetail, ResourceStatus, ResourceType } from '@trailcomand/shared';
 import { useState } from 'react';
 
 import { AddIcon, EditIcon, DeleteIcon, SpinnerIcon, TruckIcon } from '@/components/icons';
@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ResourceFormDialog } from '@/features/resources/components/ResourceFormDialog';
 import { useDeleteResource, useResources } from '@/features/resources/hooks/useResources';
 import { useWorkspaceStore } from '@/stores/workspace.store';
-import { PERMISSION_CODES } from '@tripchange/shared';
+import { PERMISSION_CODES } from '@trailcomand/shared';
 
 const PAGE_SIZE = 20;
 const typeVariants: Record<ResourceType, 'info' | 'default'> = { VEHICLE: 'info', EQUIPMENT: 'default', OTHER: 'default' };

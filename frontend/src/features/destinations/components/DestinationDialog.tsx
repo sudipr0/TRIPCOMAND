@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createDestinationSchema, updateDestinationSchema,
   type CreateDestinationInput, type DestinationDetail,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 import { useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';

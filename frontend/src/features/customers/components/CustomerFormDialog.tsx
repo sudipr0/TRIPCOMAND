@@ -2,10 +2,10 @@ import { z } from 'zod';
 import { useState, type ReactNode } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import { type CustomerDetail } from '@tripchange/shared';
-import { updateCustomerSchema } from '@tripchange/shared';
-import { type CreateCustomerInput } from '@tripchange/shared';
-import { CUSTOMER_TYPES, createCustomerSchema } from '@tripchange/shared';
+import { type CustomerDetail } from '@trailcomand/shared';
+import { updateCustomerSchema } from '@trailcomand/shared';
+import { type CreateCustomerInput } from '@trailcomand/shared';
+import { CUSTOMER_TYPES, createCustomerSchema } from '@trailcomand/shared';
 
 import { fromDateInput } from '@/lib/utils';
 import { Input } from '@/components/ui/input';

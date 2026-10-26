@@ -76,6 +76,63 @@ export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>;
 export type UpdateWorkspaceInput = z.infer<typeof updateWorkspaceSchema>;
 export type InviteMemberInput = z.infer<typeof inviteMemberSchema>;
 export type UpdateMemberRoleInput = z.infer<typeof updateMemberRoleSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Disruptions & recovery
+// ─────────────────────────────────────────────────────────────────────────────
+export const DISRUPTION_CATEGORIES = [
+  'WEATHER',
+  'ROUTE_CLOSURE',
+  'SUPPLIER_CANCELLATION',
+  'TRANSPORT_DELAY',
+  'STAFF_UNAVAILABLE',
+  'EQUIPMENT_ISSUE',
+  'TRAVELER_ISSUE',
+  'OTHER',
+] as const;
+
+export const disruptionCategorySchema = z.enum(DISRUPTION_CATEGORIES);
+export const disruptionSeveritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']);
+export const createDisruptionSchema = z.object({
+  tripId: z.string().trim().min(1),
+  title: z.string().trim().min(3).max(200),
+  description: z.string().trim().min(3).max(5000),
+  category: disruptionCategorySchema,
+  severity: disruptionSeveritySchema.default('HIGH'),
+  // Optional link to the affected day; when set, that day becomes PROBLEM.
+  itineraryDayId: z.string().uuid().nullable().optional(),
+});
+export const createRecoveryPlanSchema = z.object({
+  estimatedCost: z.coerce.number().finite().min(0).nullable().optional(),
+  notes: z.string().trim().max(5000).nullable().optional(),
+  tasks: z.array(z.object({
+    title: z.string().trim().min(2).max(200),
+    assignedToId: z.string().trim().min(1).nullable().optional(),
+    dueAt: z.coerce.date().nullable().optional(),
+  })).min(1).max(5),
+});
+export const completeTaskSchema = z.object({
+  evidenceUrl: z.preprocess((value) => value === '' ? null : value, z.string().trim().url().nullable().optional()),
+});
+export type DisruptionCategory = z.infer<typeof disruptionCategorySchema>;
+export type DisruptionSeverity = z.infer<typeof disruptionSeveritySchema>;
+export type CreateDisruptionInput = z.infer<typeof createDisruptionSchema>;
+
+// ─────────────────────────────
+// Live trip timeline (Phase 10.5)
+// ─────────────────────────────
+
+export const DAY_STATUSES = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'DELAYED', 'PROBLEM'] as const;
+export const dayStatusSchema = z.enum(DAY_STATUSES);
+
+export const updateDayStatusSchema = z.object({
+  status: dayStatusSchema,
+});
+
+export type DayStatusInput = z.infer<typeof dayStatusSchema>;
+export type UpdateDayStatusInput = z.infer<typeof updateDayStatusSchema>;
+export type CreateRecoveryPlanInput = z.infer<typeof createRecoveryPlanSchema>;
+export type CompleteRecoveryTaskInput = z.infer<typeof completeTaskSchema>;
 export type CreateRoleInput = z.infer<typeof createRoleSchema>;
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;
 
@@ -915,7 +972,11 @@ export const itineraryDayBaseFields = {
   title: z.string().trim().min(1).max(200),
   description: z.string().trim().max(3000).nullable().optional(),
   location: z.string().trim().max(200).nullable().optional(),
+  startLocation: z.string().trim().max(200).nullable().optional(),
+  endLocation: z.string().trim().max(200).nullable().optional(),
   altitude: z.coerce.number().int().min(0).max(10000).nullable().optional(),
+  elevationGain: z.coerce.number().int().min(-1000).max(5000).nullable().optional(),
+  distanceKm: z.coerce.number().min(0).max(1000).nullable().optional(),
   startTime: z.string().trim().max(10).nullable().optional(),
   endTime: z.string().trim().max(10).nullable().optional(),
   walkingHours: z.coerce.number().min(0).max(24).nullable().optional(),
@@ -932,7 +993,11 @@ export const updateItineraryDaySchema = z
     title: z.string().trim().min(1).max(200).optional(),
     description: z.string().trim().max(3000).nullable().optional(),
     location: z.string().trim().max(200).nullable().optional(),
+    startLocation: z.string().trim().max(200).nullable().optional(),
+    endLocation: z.string().trim().max(200).nullable().optional(),
     altitude: z.coerce.number().int().min(0).max(10000).nullable().optional(),
+    elevationGain: z.coerce.number().int().min(-1000).max(5000).nullable().optional(),
+    distanceKm: z.coerce.number().min(0).max(1000).nullable().optional(),
     startTime: z.string().trim().max(10).nullable().optional(),
     endTime: z.string().trim().max(10).nullable().optional(),
     walkingHours: z.coerce.number().min(0).max(24).nullable().optional(),
@@ -1503,3 +1568,174 @@ export type RecordSupplierQuoteInput = z.infer<typeof recordSupplierQuoteSchema>
 export type CancelSupplierBookingInput = z.infer<typeof cancelSupplierBookingSchema>;
 export type RecordSupplierBookingActualCostInput = z.infer<typeof recordSupplierBookingActualCostSchema>;
 export type SupplierAlternativesQuery = z.infer<typeof supplierAlternativesQuerySchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 7 — Field Operations (Guide mobile check-ins & reports)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const CHECK_IN_TYPES = [
+  'START',
+  'MID',
+  'END',
+  'EMERGENCY',
+  'DELAY',
+  'ISSUE',
+] as const;
+
+export const REPORT_TYPES = [
+  'PROGRESS_UPDATE',
+  'DELAY',
+  'WEATHER',
+  'ROUTE_ISSUE',
+  'ACCOMMODATION_ISSUE',
+  'SUPPLIER_ISSUE',
+  'TRAVELER_ISSUE',
+  'SAFETY_CONCERN',
+  'EMERGENCY',
+  'OTHER',
+] as const;
+
+export const checkInTypeSchema = z.enum(CHECK_IN_TYPES);
+export const reportTypeSchema = z.enum(REPORT_TYPES);
+
+/** Shared by every offline queue entry: the device-generated UUID de-duplicates sync retries. */
+const clientIdSchema = z.string().uuid({ message: 'Client id must be a valid UUID' });
+const recordedAtSchema = z.string().datetime({ message: 'Recorded at must be an ISO datetime' });
+const photoUrlsSchema = z.array(z.string().trim().url({ message: 'Photo URL must be a valid URL' })).max(20).optional();
+
+export const createCheckInSchema = z.object({
+  checkInType: checkInTypeSchema,
+  /** Explicit server-side override. Omitted by the mobile app, which derives it from the session. */
+  staffId: z.string().uuid().nullable().optional(),
+  location: z.string().trim().max(200).nullable().optional(),
+  latitude: z.coerce.number().min(-90).max(90).nullable().optional(),
+  longitude: z.coerce.number().min(-180).max(180).nullable().optional(),
+  altitude: z.coerce.number().int().min(-500).max(9000).nullable().optional(),
+  message: z.string().trim().max(2000).nullable().optional(),
+  photoUrls: photoUrlsSchema,
+  recordedAt: recordedAtSchema,
+  clientId: clientIdSchema,
+});
+
+export const createFieldReportSchema = z.object({
+  reportType: reportTypeSchema,
+  severity: inquiryPrioritySchema.default('MEDIUM'),
+  description: z.string().trim().min(1, { message: 'Description is required' }).max(3000),
+  location: z.string().trim().max(200).nullable().optional(),
+  photoUrls: photoUrlsSchema,
+  recordedAt: recordedAtSchema,
+  clientId: clientIdSchema,
+  // Optional link to the affected day; drives that day's timeline status.
+  itineraryDayId: z.string().uuid().nullable().optional(),
+});
+
+/** `activeOnly` keeps the guide's home screen to trips that are still running. */
+export const listFieldDataQuerySchema = z.object({
+  tripId: z.string().uuid().optional(),
+  activeOnly: z
+    .preprocess((value) => {
+      if (typeof value === 'string') return value.toLowerCase() === 'true';
+      return value;
+    }, z.boolean())
+    .optional(),
+});
+
+export type CheckInType = (typeof CHECK_IN_TYPES)[number];
+export type ReportType = (typeof REPORT_TYPES)[number];
+export type CreateCheckInInput = z.infer<typeof createCheckInSchema>;
+export type CreateFieldReportInput = z.infer<typeof createFieldReportSchema>;
+export type ListFieldDataQuery = z.infer<typeof listFieldDataQuerySchema>;
+
+// ─────────────────────────────
+// Finance & profitability (Phase 9)
+// ─────────────────────────────
+
+/** Margin at or above this is healthy. */
+export const FINANCE_HEALTHY_MARGIN_PERCENT = 20;
+/** Below this margin the dashboard flags the trip. */
+export const FINANCE_LOW_MARGIN_PERCENT = 10;
+
+export const financeTripParamsSchema = z.object({
+  workspaceId: z.string().uuid(),
+  tripId: z.string().uuid(),
+});
+
+export const financeSummaryQuerySchema = z.object({
+  /** Include trips in PLANNING that have no booking or supplier commitments yet. */
+  includeEmpty: z
+    .preprocess((value) => (typeof value === 'string' ? value.toLowerCase() === 'true' : value), z.boolean())
+    .optional(),
+});
+
+export type FinanceTripParams = z.infer<typeof financeTripParamsSchema>;
+export type FinanceSummaryQuery = z.infer<typeof financeSummaryQuerySchema>;
+// ─────────────────────────────
+// Client portal & documents (Phase 10)
+// ─────────────────────────────
+
+export const documentTypeSchema = z.enum(['PASSPORT', 'INSURANCE', 'VISA', 'VACCINATION', 'OTHER']);
+
+/** Portal tokens are 32 random bytes, lowercase hex. Anything else is rejected before a DB hit. */
+export const portalTokenSchema = z
+  .string()
+  .trim()
+  .regex(/^[a-f0-9]{64}$/, { message: 'Invalid portal token' });
+
+export const portalTokenParamsSchema = z.object({
+  token: portalTokenSchema,
+});
+
+export const portalTravelerParamsSchema = z.object({
+  workspaceId: z.string().uuid(),
+  tripId: z.string().uuid(),
+  travelerId: z.string().uuid(),
+});
+
+export const portalTripParamsSchema = z.object({
+  workspaceId: z.string().uuid(),
+  tripId: z.string().uuid(),
+});
+
+/**
+ * Uploads carry a URL rather than a file body: this project has no object
+ * storage wired up, so the client uploads elsewhere and posts the link.
+ */
+export const createTripDocumentSchema = z.object({
+  travelerId: z.string().uuid(),
+  documentType: documentTypeSchema,
+  fileName: z.string().trim().min(1).max(255),
+  fileUrl: z.string().trim().url({ message: 'Document URL must be a valid URL' }).max(2000),
+});
+
+/** The traveler upload is bound to the token, so it cannot name another traveler. */
+export const travelerUploadDocumentSchema = createTripDocumentSchema.omit({ travelerId: true });
+
+/**
+ * Traveller help requests. The message is the only client input: the trip,
+ * traveller and workspace all come from the portal token, and `clientId` is a
+ * device-generated UUID so a retried or queued submission never duplicates.
+ */
+export const PORTAL_HELP_MESSAGE_MAX = 1500;
+export const PORTAL_HELP_MESSAGE_MIN = 10;
+
+export const portalHelpRequestSchema = z.object({
+  message: z
+    .string()
+    .trim()
+    .min(PORTAL_HELP_MESSAGE_MIN, { message: `Please describe the problem in at least ${PORTAL_HELP_MESSAGE_MIN} characters` })
+    .max(PORTAL_HELP_MESSAGE_MAX, { message: `Please keep the description under ${PORTAL_HELP_MESSAGE_MAX} characters` }),
+  /** The day the traveller is on, when the client knows it. Optional and re-checked server-side. */
+  itineraryDayId: z.string().uuid().nullable().optional(),
+  clientId: z.string().uuid({ message: 'Client id must be a valid UUID' }),
+});
+
+export const portalAcknowledgeUpdateSchema = z.object({
+  clientId: z.string().uuid({ message: 'Client id must be a valid UUID' }).optional(),
+});
+
+export type PortalHelpRequestInput = z.infer<typeof portalHelpRequestSchema>;
+export type PortalAcknowledgeUpdateInput = z.infer<typeof portalAcknowledgeUpdateSchema>;
+
+export type PortalTokenParams = z.infer<typeof portalTokenParamsSchema>;
+export type CreateTripDocumentSchemaInput = z.infer<typeof createTripDocumentSchema>;
+export type TravelerUploadDocumentInput = z.infer<typeof travelerUploadDocumentSchema>;

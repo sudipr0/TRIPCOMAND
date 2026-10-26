@@ -5,7 +5,7 @@ import { DeleteIcon, EditIcon, MoreIcon, SendIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import type { QuotationDetail } from '@tripchange/shared';
+import type { QuotationDetail } from '@trailcomand/shared';
 import { ConvertQuotationDialog } from '@/features/quotations/components/ConvertQuotationDialog';
 import { QuotationFormDialog } from '@/features/quotations/components/QuotationFormDialog';
 import { RejectQuotationDialog } from '@/features/quotations/components/RejectQuotationDialog';

@@ -1,15 +1,15 @@
 import type { Prisma } from '@prisma/client';
 
-import type { DestinationDetail } from '@tripchange/shared';
-import type { TrekTemplateDetail } from '@tripchange/shared';
-import type { TrekTemplateDayDetail } from '@tripchange/shared';
-import type { ListTrekTemplatesQuery } from '@tripchange/shared';
-import type { CreateTrekTemplateInput } from '@tripchange/shared';
-import type { UpdateTrekTemplateInput } from '@tripchange/shared';
-import type { ListTrekTemplatesResult } from '@tripchange/shared';
-import type { CreateTrekTemplateDayInput } from '@tripchange/shared';
-import type { UpdateTrekTemplateDayInput } from '@tripchange/shared';
-import type { ReorderTrekTemplateDaysInput } from '@tripchange/shared';
+import type { DestinationDetail } from '@trailcomand/shared';
+import type { TrekTemplateDetail } from '@trailcomand/shared';
+import type { TrekTemplateDayDetail } from '@trailcomand/shared';
+import type { ListTrekTemplatesQuery } from '@trailcomand/shared';
+import type { CreateTrekTemplateInput } from '@trailcomand/shared';
+import type { UpdateTrekTemplateInput } from '@trailcomand/shared';
+import type { ListTrekTemplatesResult } from '@trailcomand/shared';
+import type { CreateTrekTemplateDayInput } from '@trailcomand/shared';
+import type { UpdateTrekTemplateDayInput } from '@trailcomand/shared';
+import type { ReorderTrekTemplateDaysInput } from '@trailcomand/shared';
 
 import { AppError } from '../../lib/errors.js';
 import { logAuditEvent } from '../../lib/audit.js';

@@ -33,4 +33,4 @@ export {
   type ReorderItineraryDaysInput,
   type PopulateFromTemplateInput,
   type PublishItineraryInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

@@ -11,7 +11,7 @@ import type {
   StaffProfileDetail,
   StaffDocumentDetail,
   ListStaffResult,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 import type { Prisma } from '@prisma/client';
 
 function toDocumentDetail(doc: {

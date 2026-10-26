@@ -1,8 +1,8 @@
-import type { UpdateBookingInput } from '@tripchange/shared';
-import type { BookingDetail, CancelBookingInput } from '@tripchange/shared';
-import type { ListPaymentsResult, PaymentDetail } from '@tripchange/shared';
-import type { CreatePaymentInput, ListBookingsQuery } from '@tripchange/shared';
-import type { ListBookingsResult, ListPaymentsQuery } from '@tripchange/shared';
+import type { UpdateBookingInput } from '@trailcomand/shared';
+import type { BookingDetail, CancelBookingInput } from '@trailcomand/shared';
+import type { ListPaymentsResult, PaymentDetail } from '@trailcomand/shared';
+import type { CreatePaymentInput, ListBookingsQuery } from '@trailcomand/shared';
+import type { ListBookingsResult, ListPaymentsQuery } from '@trailcomand/shared';
 
 import { apiClient, unwrap, type ApiEnvelope } from '@/lib/api-client';
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SUPPLIER_CATEGORIES, type SupplierCategory, type TripDetail } from '@tripchange/shared';
+import { SUPPLIER_CATEGORIES, type SupplierCategory, type TripDetail } from '@trailcomand/shared';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

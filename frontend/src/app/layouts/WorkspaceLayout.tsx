@@ -18,6 +18,8 @@ import {
   TripIcon,
   TruckIcon,
   CalendarIcon,
+  WarningIcon,
+  MoneyIcon,
 } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -27,7 +29,7 @@ import { WorkspaceSwitcher } from '@/features/workspace/components/WorkspaceSwit
 import { useLogout, useSession } from '@/features/auth/hooks/useAuth';
 import { useWorkspaces } from '@/features/workspace/hooks/useWorkspaces';
 import { getInitials } from '@/lib/utils';
-import { useAuthStore } from '@/stores/auth.store';
+import { useAuthStore, isGuideRole } from '@/stores/auth.store';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 
 interface NavItem {
@@ -37,8 +39,8 @@ interface NavItem {
 }
 
 const navGroups: { label: string; items: NavItem[] }[] = [
-  { label: 'Operations', items: [{ label: 'Dashboard', path: '/dashboard', icon: DashboardIcon }, { label: 'Trips', path: '/trips', icon: TripIcon }, { label: 'Itinerary', path: '/trips', icon: TripIcon }] },
-  { label: 'Commercial', items: [{ label: 'Customers', path: '/customers', icon: CustomerIcon }, { label: 'Inquiries', path: '/inquiries', icon: InquiryIcon }, { label: 'Quotations', path: '/quotations', icon: QuotationIcon }, { label: 'Bookings', path: '/bookings', icon: BookingIcon }] },
+  { label: 'Operations', items: [{ label: 'Dashboard', path: '/dashboard', icon: DashboardIcon }, { label: 'Trips', path: '/trips', icon: TripIcon }, { label: 'Disruptions', path: '/disruptions', icon: WarningIcon }, { label: 'Itinerary', path: '/trips', icon: TripIcon }] },
+  { label: 'Commercial', items: [{ label: 'Customers', path: '/customers', icon: CustomerIcon }, { label: 'Inquiries', path: '/inquiries', icon: InquiryIcon }, { label: 'Quotations', path: '/quotations', icon: QuotationIcon }, { label: 'Bookings', path: '/bookings', icon: BookingIcon }, { label: 'Finance', path: '/finance', icon: MoneyIcon }] },
   { label: 'Catalog', items: [{ label: 'Destinations', path: '/destinations', icon: DestinationIcon }, { label: 'Trek Templates', path: '/trek-templates', icon: TemplateIcon }] },
   { label: 'Resources', items: [{ label: 'Staff', path: '/staff', icon: StaffIcon }, { label: 'Resources', path: '/resources', icon: TruckIcon }, { label: 'Availability', path: '/availability', icon: CalendarIcon }, { label: 'Suppliers', path: '/suppliers', icon: SupplierIcon }] },
   { label: 'Settings', items: [{ label: 'Settings', path: '/settings', icon: SettingsIcon }] },
@@ -53,7 +55,9 @@ const pageTitles: Record<string, string> = {
   '/inquiries': 'Inquiries',
   '/quotations': 'Quotations',
   '/bookings': 'Bookings',
+  '/finance': 'Finance',
   '/trips': 'Trips',
+  '/disruptions': 'Disruptions',
   '/resources': 'Resources',
   '/availability': 'Availability',
   '/suppliers': 'Suppliers',
@@ -95,7 +99,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="flex items-center justify-between">
         <Link to="/dashboard" className="flex items-center gap-2 px-1 py-2 text-lg font-semibold tracking-tight text-fg">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-xs text-accent-fg">T</span>
-          TripPilot
+          TrailComand
         </Link>
         {onClose ? <Button variant="ghost" size="sm" className="h-8 w-8 px-0 lg:hidden" onClick={onClose}><CloseIcon size={16} /></Button> : null}
       </div>
@@ -137,6 +141,9 @@ export function WorkspaceLayout() {
   const currentWorkspaceId = useWorkspaceStore((state) => state.currentWorkspaceId);
   const { isPending: sessionPending, isError: sessionError } = useSession();
   const { isLoading: workspacesLoading } = useWorkspaces(isAuthenticated);
+  const workspaceRole = useWorkspaceStore((state) =>
+    state.workspaces.find((workspace) => workspace.id === state.currentWorkspaceId)?.role.name,
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
 
   if (isLoading || sessionPending || workspacesLoading) {
@@ -144,6 +151,8 @@ export function WorkspaceLayout() {
   }
   if (!isAuthenticated || sessionError) return <Navigate to="/login" replace />;
   if (!currentWorkspaceId) return <Navigate to="/workspaces/new" replace />;
+  // A guide's home is the field app, not the office workspace.
+  if (isGuideRole(workspaceRole)) return <Navigate to="/field" replace />;
 
    const title = pageTitles[location.pathname] ?? Object.entries(pageTitles).find(([path]) => location.pathname.startsWith(`${path}/`))?.[1] ?? 'Workspace';
   return (

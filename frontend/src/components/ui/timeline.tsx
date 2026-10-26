@@ -1,4 +1,4 @@
-import type { InquiryActivityDetail } from '@tripchange/shared';
+import type { InquiryActivityDetail } from '@trailcomand/shared';
 
 import { cn, formatRelative } from '@/lib/utils';
 

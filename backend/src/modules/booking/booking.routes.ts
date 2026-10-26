@@ -1,13 +1,13 @@
 import type { FastifyPluginAsync } from "fastify";
-import { PERMISSION_CODES } from "@tripchange/shared";
-import { updateBookingSchema } from '@tripchange/shared';
-import { cancelBookingSchema } from '@tripchange/shared';
-import { type ListBookingsQuery } from '@tripchange/shared';
-import { listBookingsQuerySchema } from '@tripchange/shared';
-import { type UpdateBookingInput } from '@tripchange/shared';
-import { type CancelBookingInput } from '@tripchange/shared';
-import { createBookingSchemaFromQuotation } from '@tripchange/shared';
-import { type CreateBookingFromQuotationInput } from '@tripchange/shared';
+import { PERMISSION_CODES } from "@trailcomand/shared";
+import { updateBookingSchema } from '@trailcomand/shared';
+import { cancelBookingSchema } from '@trailcomand/shared';
+import { type ListBookingsQuery } from '@trailcomand/shared';
+import { listBookingsQuerySchema } from '@trailcomand/shared';
+import { type UpdateBookingInput } from '@trailcomand/shared';
+import { type CancelBookingInput } from '@trailcomand/shared';
+import { createBookingSchemaFromQuotation } from '@trailcomand/shared';
+import { type CreateBookingFromQuotationInput } from '@trailcomand/shared';
 
 import { BookingService } from "./booking.service.js";
 import { authMiddleware } from "../../middleware/auth.js";

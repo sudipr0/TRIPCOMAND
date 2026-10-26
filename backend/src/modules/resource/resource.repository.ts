@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import type { ListResourcesQuery } from "@tripchange/shared";
+import type { ListResourcesQuery } from "@trailcomand/shared";
 
 import { prisma } from "../../lib/prisma.js";
 

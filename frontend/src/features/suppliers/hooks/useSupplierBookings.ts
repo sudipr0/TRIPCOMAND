@@ -4,7 +4,7 @@ import type {
   RecordSupplierBookingActualCostInput,
   RecordSupplierQuoteInput,
   UpdateSupplierBookingInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 import {
   useMutation,
   useQuery,

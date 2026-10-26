@@ -10,7 +10,7 @@ import type {
   InviteMemberInput,
   UpdateMemberRoleInput,
   MemberDetail,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 import type { AcceptInviteInput } from "./membership.schemas.js";
 
 export class MembershipService {

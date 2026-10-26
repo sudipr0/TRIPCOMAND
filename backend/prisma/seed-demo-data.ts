@@ -5,7 +5,7 @@
  * constraints in schema.prisma) and restored with upsert, so running the script
  * twice produces identical counts — nothing is duplicated.
  *
- *   pnpm --filter @tripchange/backend exec tsx prisma/seed-demo-data.ts
+ *   pnpm --filter @trailcomand/backend exec tsx prisma/seed-demo-data.ts
  *
  * Prerequisite: prisma/seed.ts (permissions, workspace, Owner role/user).
  */
@@ -20,11 +20,276 @@ const log = (m: string) => console.log(`[${((Date.now() - t0) / 1000).toFixed(1)
 const DAY = 86_400_000;
 const at = (baseIso: string, days: number) => new Date(Date.parse(`${baseIso}T00:00:00Z`) + days * DAY);
 
+/**
+ * The demo Everest Base Camp route, day by day.
+ *
+ * Every measurement here is a published route fact for this itinerary, not a
+ * number invented to fill a field: the trip is 1400 m at Kathmandu, 2860 m at
+ * Lukla, 5545 m at Kala Patthar, and the walking legs are the standard EBC
+ * itinerary legs. `distanceKm` is the published trail distance rounded to one
+ * decimal and `elevationGain` is the climb for the day (not the destination
+ * altitude, which stays in `altitude`). Flight and city days carry no walking
+ * figures or trekking lodge.
+ *
+ * Day 12 is the return-flight day: it is a transfer to Kathmandu, so it must not
+ * inherit the trail lodge from the days around it.
+ */
+const EBC_ITINERARY: Array<{
+  dayNumber: number;
+  title: string;
+  description: string;
+  startLocation: string;
+  endLocation: string;
+  altitude: number;
+  elevationGain: number | null;
+  distanceKm: string | null;
+  walkingHours: string | null;
+  accommodation: string;
+  meals: string[];
+  activities: string[];
+}> = [
+  {
+    dayNumber: 1,
+    title: 'Fly to Lukla and trek to Phakding',
+    description:
+      'The 35-minute mountain flight from Kathmandu lands at Tenzing–Hillary Airport (2860 m) in the morning. After meeting the porter crew, walk north through Chaurikhang and Ghat, crossing the Dudh Koshi on suspension bridges, to spend the first night in Phakding.',
+    startLocation: 'Kathmandu',
+    endLocation: 'Phakding',
+    altitude: 2610,
+    elevationGain: -250,
+    distanceKm: '7.8',
+    walkingHours: '3.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Mountain flight', 'Trekking'],
+  },
+  {
+    dayNumber: 2,
+    title: 'Trek Phakding to Namche Bazaar',
+    description:
+      'Follow the Dudh Koshi through Benkar and Monjo to the Sagarmatha National Park checkpost, then climb steadily across the Hillary Suspension Bridge to Namche Bazaar, the Khumbu’s main village. The afternoon is free to rest and drink water.',
+    startLocation: 'Phakding',
+    endLocation: 'Namche Bazaar',
+    altitude: 3440,
+    elevationGain: 830,
+    distanceKm: '10.9',
+    walkingHours: '6.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Trekking'],
+  },
+  {
+    dayNumber: 3,
+    title: 'Acclimatisation day in Namche Bazaar',
+    description:
+      'A rest day to adjust to the altitude. A short morning walk to the Everest View Hotel (3880 m) gives the first clear view of Everest and Ama Dablam, then the afternoon is free in the village. Sleep at the same altitude as last night.',
+    startLocation: 'Namche Bazaar',
+    endLocation: 'Namche Bazaar',
+    altitude: 3440,
+    elevationGain: 440,
+    distanceKm: '6.2',
+    walkingHours: '3.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'DINNER'],
+    activities: ['Acclimatisation walk'],
+  },
+  {
+    dayNumber: 4,
+    title: 'Trek Namche Bazaar to Tengboche',
+    description:
+      'Traverse the hillside above the Dudh Koshi to Phunki Tenga, then climb through birch and rhododendron forest to Tengboche, home to the largest monastery in Khumbu. Attend the late-afternoon prayer ceremony if time allows.',
+    startLocation: 'Namche Bazaar',
+    endLocation: 'Tengboche',
+    altitude: 3870,
+    elevationGain: 430,
+    distanceKm: '9.3',
+    walkingHours: '5.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Trekking', 'Monastery visit'],
+  },
+  {
+    dayNumber: 5,
+    title: 'Trek Tengboche to Dingboche',
+    description:
+      'Descend briefly to Deboche, cross the Imja Khola and pass the mani walls below Pangboche before climbing into the open valley above the treeline to Dingboche. The rest of the afternoon is for rest.',
+    startLocation: 'Tengboche',
+    endLocation: 'Dingboche',
+    altitude: 4410,
+    elevationGain: 540,
+    distanceKm: '11.4',
+    walkingHours: '5.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Trekking'],
+  },
+  {
+    dayNumber: 6,
+    title: 'Acclimatisation day in Dingboche',
+    description:
+      'Second acclimatisation day. Hike up the ridge above the village (about 4700 m) for views towards Island Peak and Makalu, then return to the lodge. Climb high, sleep low is the plan for the day.',
+    startLocation: 'Dingboche',
+    endLocation: 'Dingboche',
+    altitude: 4410,
+    elevationGain: 290,
+    distanceKm: '5.6',
+    walkingHours: '3.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'DINNER'],
+    activities: ['Acclimatisation walk'],
+  },
+  {
+    dayNumber: 7,
+    title: 'Trek Dingboche to Lobuche',
+    description:
+      'Walk up the wide valley past the yak pastures of Pheriche, climb onto the Thukla ridge and continue to Lobuche. The afternoon is short so that the group can rest before entering the glacial moraine.',
+    startLocation: 'Dingboche',
+    endLocation: 'Lobuche',
+    altitude: 4940,
+    elevationGain: 530,
+    distanceKm: '8.5',
+    walkingHours: '4.5',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Trekking'],
+  },
+  {
+    dayNumber: 8,
+    title: 'Trek Lobuche to Gorak Shep and Everest Base Camp',
+    description:
+      'Follow the moraine of the Khumbu Glacier to Gorak Shep, drop bags at the lodge, then continue across the glacier to Everest Base Camp (5364 m) and return to sleep at Gorak Shep. This is the longest and hardest walking day of the trip.',
+    startLocation: 'Lobuche',
+    endLocation: 'Gorak Shep',
+    altitude: 5140,
+    elevationGain: 420,
+    distanceKm: '12.4',
+    walkingHours: '7.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Trekking', 'Everest Base Camp'],
+  },
+  {
+    dayNumber: 9,
+    title: 'Kala Patthar sunrise, then return to Pheriche',
+    description:
+      'An early start for the climb to Kala Patthar (5545 m), the best viewpoint onto Everest, then back past Gorak Shep and Lobuche to sleep lower in Pheriche.',
+    startLocation: 'Gorak Shep',
+    endLocation: 'Pheriche',
+    altitude: 4370,
+    elevationGain: 405,
+    distanceKm: '14.6',
+    walkingHours: '7.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Sunrise viewpoint', 'Trekking'],
+  },
+  {
+    dayNumber: 10,
+    title: 'Trek Pheriche to Namche Bazaar',
+    description:
+      'A long descent retracing the valley through Pangboche and Tengboche, then the climb back up to Namche Bazaar. The pace is relaxed as the group drops below 4000 m.',
+    startLocation: 'Pheriche',
+    endLocation: 'Namche Bazaar',
+    altitude: 3440,
+    elevationGain: null,
+    distanceKm: '18.2',
+    walkingHours: '7.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Trekking'],
+  },
+  {
+    dayNumber: 11,
+    title: 'Trek Namche Bazaar to Lukla',
+    description:
+      'The final walking day follows the Dudh Koshi back down through Monjo and Phakding to Lukla, with the last suspension bridges of the trip. Celebrate the finish with the crew in the evening.',
+    startLocation: 'Namche Bazaar',
+    endLocation: 'Lukla',
+    altitude: 2860,
+    elevationGain: null,
+    distanceKm: '18.5',
+    walkingHours: '7.0',
+    accommodation: 'Lodge',
+    meals: ['BREAKFAST', 'LUNCH', 'DINNER'],
+    activities: ['Trekking'],
+  },
+  {
+    dayNumber: 12,
+    title: 'Fly from Lukla to Kathmandu',
+    description:
+      'Transfer day: check in at Tenzing–Hillary Airport for the morning flight back to Kathmandu, followed by an airport transfer to the hotel. The rest of the day is free to rest or explore Thamel.',
+    startLocation: 'Lukla',
+    endLocation: 'Kathmandu',
+    altitude: 1400,
+    elevationGain: null,
+    distanceKm: null,
+    walkingHours: null,
+    accommodation: 'Hotel',
+    meals: ['BREAKFAST'],
+    activities: ['Mountain flight', 'Airport transfer'],
+  },
+  {
+    dayNumber: 13,
+    title: 'Kathmandu, free day and celebration dinner',
+    description:
+      'A free day in Kathmandu to recover, shop or visit the heritage sites of the old city. The group meets for a final dinner together in the evening.',
+    startLocation: 'Kathmandu',
+    endLocation: 'Kathmandu',
+    altitude: 1400,
+    elevationGain: null,
+    distanceKm: null,
+    walkingHours: null,
+    accommodation: 'Hotel',
+    meals: ['BREAKFAST', 'DINNER'],
+    activities: ['Free day', 'Group dinner'],
+  },
+  {
+    dayNumber: 14,
+    title: 'Airport transfer and departure',
+    description:
+      'Check out of the hotel and transfer to Tribhuvan International Airport for the international flight home.',
+    startLocation: 'Kathmandu',
+    endLocation: 'Kathmandu',
+    altitude: 1400,
+    elevationGain: null,
+    distanceKm: null,
+    walkingHours: null,
+    accommodation: 'Departure',
+    meals: ['BREAKFAST'],
+    activities: ['Airport transfer'],
+  },
+];
+
 async function main() {
   const workspace = await prisma.workspace.findUniqueOrThrow({ where: { slug: 'demo' } });
   const ws = workspace.id;
   const owner = await prisma.user.findUniqueOrThrow({ where: { email: 'owner@demo.com' } });
   log(`Target workspace: demo (${ws})`);
+
+  // ── Agency contact details (what the traveller portal is allowed to show) ──
+  // These are the only keys the portal reads out of workspace.settings. They are
+  // merged rather than replaced so unrelated settings survive a re-seed.
+  const existingSettings =
+    workspace.settings && typeof workspace.settings === 'object' && !Array.isArray(workspace.settings)
+      ? (workspace.settings as Record<string, unknown>)
+      : {};
+  await prisma.workspace.update({
+    where: { id: ws },
+    data: {
+      name: 'TrailComand Demo',
+      settings: {
+        ...existingSettings,
+        timezone: 'Asia/Kathmandu',
+        contactEmail: 'ops@demo.example',
+        contactPhone: '+977-1-4000000',
+        address: 'Thamel, Kathmandu, Nepal',
+        // Only a number the agency actually staffs. Left blank, not invented.
+        emergencyContactPhone: '',
+        emergencyInstructions:
+          'For an emergency on the trail, tell your guide first: the guide carries a satellite messenger and can reach the office at any hour. If you cannot reach the guide, call the office line during Nepal business hours. This page is guidance only and does not contact emergency services for you.',
+      },
+    },
+  });
 
   // ── Staff (Phase 5) ────────────────────────────────────────────────────────
   const staffSpecs: Array<{
@@ -383,8 +648,9 @@ async function main() {
 
   // ── Trip (Phase 4) + travelers, itinerary, versions ────────────────────────
   const tripNumber = `TRP-${year}-001`;
+  // The trip's start date *is* day 1, so a fourteen-day itinerary ends on day 14.
   const tripStart = '2026-11-10';
-  const tripDays = Array.from({ length: 12 }, (_, index) => index + 1);
+  const tripEnd = at(tripStart, 13);
 
   const tripPayload = {
     workspaceId: ws,
@@ -393,7 +659,7 @@ async function main() {
     tripNumber,
     name: 'Everest Base Camp — Mitchell Party',
     startDate: at(tripStart, 0),
-    endDate: at(tripStart, 13),
+    endDate: tripEnd,
     groupSize: 4,
     status: 'READY' as const,
     operationsManagerId: owner.id,
@@ -407,7 +673,7 @@ async function main() {
   });
 
   const travelerSpecs: Array<{ fullName: string; email: string; nationality: string; isTripLeader: boolean; customerId?: string }> = [
-    { fullName: 'Sarah Mitchell', email: 'sarah.mitchell@example.com', nationality: 'United Kingdom', isTripLeader: true, customerId: customers['Sarah Mitchell']!.id },
+    { fullName: 'Sarah Mitchell', email: 's.mitchell@example.com', nationality: 'United Kingdom', isTripLeader: true, customerId: customers['Sarah Mitchell']!.id },
     { fullName: 'Daniel Mitchell', email: 'daniel.mitchell@example.com', nationality: 'United Kingdom', isTripLeader: false },
     { fullName: 'Priya Raman', email: 'priya.raman@example.com', nationality: 'India', isTripLeader: false },
     { fullName: 'Tom Becker', email: 'tom.becker@example.com', nationality: 'Germany', isTripLeader: false },
@@ -427,32 +693,87 @@ async function main() {
     else await prisma.tripTraveler.create({ data });
   }
 
-  for (const dayNumber of tripDays) {
+  // Older seed revisions re-created travelers instead of matching the natural key
+  // (trip + full name), which left exact duplicates on the trip. Remove only rows
+  // that duplicate a name defined above, keeping the oldest row - the one that owns
+  // portal access and documents. Travelers this seed does not define are left alone.
+  const seededNames = new Set(travelerSpecs.map((spec) => spec.fullName));
+  const seededTravelers = await prisma.tripTraveler.findMany({
+    where: { tripId: trip.id },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, fullName: true },
+  });
+  const seenTravelers = new Map<string, string>();
+  for (const seededTraveler of seededTravelers) {
+    if (!seededNames.has(seededTraveler.fullName)) continue;
+    const keeperId = seenTravelers.get(seededTraveler.fullName);
+    if (!keeperId) {
+      seenTravelers.set(seededTraveler.fullName, seededTraveler.id);
+      continue;
+    }
+    // Hand the duplicate's documents and portal link to the kept row before it goes.
+    await prisma.tripDocument.updateMany({
+      where: { travelerId: seededTraveler.id },
+      data: { travelerId: keeperId },
+    });
+    const [duplicateAccess, keeperAccess] = await Promise.all([
+      prisma.portalAccess.findUnique({ where: { travelerId: seededTraveler.id }, select: { id: true } }),
+      prisma.portalAccess.findUnique({ where: { travelerId: keeperId }, select: { id: true } }),
+    ]);
+    if (duplicateAccess) {
+      if (keeperAccess) await prisma.portalAccess.delete({ where: { id: duplicateAccess.id } });
+      else await prisma.portalAccess.update({ where: { id: duplicateAccess.id }, data: { travelerId: keeperId } });
+    }
+    await prisma.tripTraveler.delete({ where: { id: seededTraveler.id } });
+    log(`Removed duplicate traveler row: ${seededTraveler.fullName}`);
+  }
+
+  // Live timeline demo state: the trip is partway through, so days 1-2 are done,
+  // day 3 is running, and day 5 is behind schedule (a transport delay).
+  // Everything after that is still pending.
+  const dayStatus = (dayNumber: number) => {
+    if (dayNumber <= 2) return 'COMPLETED' as const;
+    if (dayNumber === 3) return 'IN_PROGRESS' as const;
+    if (dayNumber === 5) return 'DELAYED' as const;
+    return 'PENDING' as const;
+  };
+
+  for (const spec of EBC_ITINERARY) {
     const data = {
       workspaceId: ws,
       tripId: trip.id,
-      dayNumber,
-      title: dayNumber === 1 ? 'Fly to Lukla & trek to Phakding' : dayNumber === 12 ? 'Fly back to Kathmandu' : `Trek day ${dayNumber}`,
-      description: `Day ${dayNumber} of the Everest Base Camp itinerary.`,
-      location: 'Khumbu',
-      altitude: dayNumber === 12 ? 1400 : 2800 + dayNumber * 120,
-      walkingHours: dayNumber === 12 ? '0' : '5.5',
-      accommodation: 'Teahouse',
-      meals: ['BREAKFAST', 'DINNER'],
-      activities: ['Trekking'],
+      dayNumber: spec.dayNumber,
+      title: spec.title,
+      description: spec.description,
+      // `location` is the legacy single label; start/end are the authoritative pair.
+      location: spec.endLocation,
+      startLocation: spec.startLocation,
+      endLocation: spec.endLocation,
+      altitude: spec.altitude,
+      elevationGain: spec.elevationGain,
+      distanceKm: spec.distanceKm,
+      walkingHours: spec.walkingHours,
+      accommodation: spec.accommodation,
+      meals: spec.meals,
+      activities: spec.activities,
       clientVisible: true,
+      status: dayStatus(spec.dayNumber),
     };
     await prisma.itineraryDay.upsert({
-      where: { tripId_dayNumber: { tripId: trip.id, dayNumber } },
+      where: { tripId_dayNumber: { tripId: trip.id, dayNumber: spec.dayNumber } },
       update: data,
       create: data,
     });
   }
 
+  // The published snapshot mirrors the live days so the office version history and
+  // the traveller timeline cannot disagree about where each day starts and ends.
   const snapshot = {
-    days: tripDays.map((dayNumber) => ({
-      dayNumber,
-      title: dayNumber === 1 ? 'Fly to Lukla & trek to Phakding' : dayNumber === 12 ? 'Fly back to Kathmandu' : `Trek day ${dayNumber}`,
+    days: EBC_ITINERARY.map((spec) => ({
+      dayNumber: spec.dayNumber,
+      title: spec.title,
+      startLocation: spec.startLocation,
+      endLocation: spec.endLocation,
     })),
   };
   const versionData = {
@@ -471,6 +792,67 @@ async function main() {
     create: versionData,
   });
   await prisma.trip.update({ where: { id: trip.id }, data: { publishedItineraryVersionId: published.id } });
+
+  // ── Published trip updates ─────────────────────────────────────────
+  // PROGRESS_UPDATE reports are the agency's client-visible update stream: they carry
+  // an agency-authored message, a status and a publication time, which is what the
+  // traveller Command Center lists. DELAY is the office investigation feed shown to
+  // the traveller as "awaiting agency update", never as a confirmed change.
+  const updateSpecs: Array<{
+    clientId: string;
+    reportType: 'PROGRESS_UPDATE' | 'DELAY';
+    severity: 'LOW' | 'MEDIUM' | 'HIGH';
+    description: string;
+    hoursAgo: number;
+  }> = [
+    {
+      clientId: 'demo-update-kathmandu-briefing',
+      reportType: 'PROGRESS_UPDATE',
+      severity: 'LOW',
+      description:
+        'Welcome briefing completed in Kathmandu. Permits and TIMS cards are in hand, duffel weights have been checked, and the Lukla flight is confirmed for tomorrow morning.',
+      hoursAgo: 40,
+    },
+    {
+      clientId: 'demo-report-lukla-headwinds',
+      reportType: 'DELAY',
+      severity: 'MEDIUM',
+      description:
+        'Strong headwinds at Lukla held the group on the ground this morning. The guide is re-timing today’s walk and the lodge in Phakding has been told to expect a late arrival.',
+      hoursAgo: 16,
+    },
+    {
+      clientId: 'demo-update-phakding-arrival',
+      reportType: 'PROGRESS_UPDATE',
+      severity: 'LOW',
+      description:
+        'The group reached Phakding safely after a shortened first day on the trail. Everyone is well rested and tomorrow’s walk to Namche Bazaar starts after breakfast.',
+      hoursAgo: 3,
+    },
+  ];
+  const seedNow = Date.now();
+  for (const spec of updateSpecs) {
+    const recordedAt = new Date(seedNow - spec.hoursAgo * 3_600_000);
+    // clientId is unique, so a repeated seed updates the same row instead of
+    // appending duplicate updates (which would also reset acknowledgements).
+    await prisma.fieldReport.upsert({
+      where: { clientId: spec.clientId },
+      update: { description: spec.description, severity: spec.severity },
+      create: {
+        workspaceId: ws,
+        tripId: trip.id,
+        reporterId: owner.id,
+        reportType: spec.reportType,
+        severity: spec.severity,
+        description: spec.description,
+        photoUrls: [],
+        recordedAt,
+        syncedAt: recordedAt,
+        clientId: spec.clientId,
+      },
+    });
+  }
+  log(`Trip updates ensured: ${updateSpecs.length}`);
 
   // ── Staff assignments + supplier bookings (Phases 5–6) ─────────────────────
   const assignmentSpecs: Array<{ staff: string; role: string; rate: string }> = [
@@ -528,7 +910,7 @@ async function main() {
     if (existing) await prisma.supplierBooking.update({ where: { id: existing.id }, data });
     else await prisma.supplierBooking.create({ data });
   }
-  log(`Trip ensured: ${tripNumber} (4 travelers, 12 days, 3 assignments, 3 supplier bookings)`);
+  log(`Trip ensured: ${tripNumber} (${travelerSpecs.length} travelers, ${EBC_ITINERARY.length} days, ${assignmentSpecs.length} assignments, ${supplierBookingSpecs.length} supplier bookings)`);
 
   const counts = {
     destinations: await prisma.destination.count(),

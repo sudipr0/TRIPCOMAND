@@ -1,4 +1,4 @@
-import type { AgencyProfileDetail, CreateWorkspaceInput, UpdateWorkspaceInput, WorkspaceSummary } from '@tripchange/shared';
+import type { AgencyProfileDetail, CreateWorkspaceInput, UpdateWorkspaceInput, WorkspaceSummary } from '@trailcomand/shared';
 
 import { apiClient, unwrap } from '@/lib/api-client';
 

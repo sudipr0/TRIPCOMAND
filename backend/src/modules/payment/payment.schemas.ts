@@ -6,4 +6,4 @@ export {
   type PaymentType,
   type CreatePaymentInput,
   type ListPaymentsQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

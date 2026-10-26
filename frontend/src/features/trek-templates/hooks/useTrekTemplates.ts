@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
    CreateTrekTemplateDayInput, CreateTrekTemplateInput, ListTrekTemplatesQuery, ReorderTrekTemplateDaysInput,
   UpdateTrekTemplateDayInput, UpdateTrekTemplateInput,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 import { toast } from 'sonner';
 
 import { trekTemplatesApi } from '@/features/trek-templates/api/trekTemplates.api';

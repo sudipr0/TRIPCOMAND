@@ -1,4 +1,4 @@
-import { PERMISSION_CODES, type TrekTemplateDetail } from '@tripchange/shared';
+import { PERMISSION_CODES, type TrekTemplateDetail } from '@trailcomand/shared';
 import { Link } from 'react-router-dom';
 
 import { CalendarIcon, DestinationIcon, TemplateIcon } from '@/components/icons';

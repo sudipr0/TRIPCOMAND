@@ -6,7 +6,7 @@ import type {
   UpdateRoleInput,
   RoleDetail,
   PermissionCode,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 export class RoleService {
   static async listRoles(workspaceId: string): Promise<RoleDetail[]> {

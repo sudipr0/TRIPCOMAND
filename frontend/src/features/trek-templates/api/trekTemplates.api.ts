@@ -2,7 +2,7 @@ import type {
   CreateTrekTemplateDayInput, CreateTrekTemplateInput, ListTrekTemplatesQuery,
   ListTrekTemplatesResult, ReorderTrekTemplateDaysInput, TrekTemplateDayDetail, TrekTemplateDetail,
   UpdateTrekTemplateDayInput, UpdateTrekTemplateInput,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 
 import { apiClient, unwrap, type ApiEnvelope } from '@/lib/api-client';
 

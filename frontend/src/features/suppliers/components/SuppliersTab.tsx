@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { SupplierBookingDetail, TripDetail } from '@tripchange/shared';
+import type { SupplierBookingDetail, TripDetail } from '@trailcomand/shared';
 
 import { differenceInHours } from 'date-fns';
 

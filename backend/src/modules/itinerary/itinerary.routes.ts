@@ -4,10 +4,12 @@ import { authMiddleware } from "../../middleware/auth.js";
 import { tenancyMiddleware } from "../../middleware/tenancy.js";
 import { permissionMiddleware } from "../../middleware/permission.js";
 import { validateBody } from "../../middleware/validation.js";
-import { PERMISSION_CODES } from "@tripchange/shared";
+import { PERMISSION_CODES } from "@trailcomand/shared";
+import type { DayStatusValue } from "@trailcomand/shared";
 import {
   createItineraryDaySchema,
   updateItineraryDaySchema,
+  updateDayStatusSchema,
   reorderItineraryDaysSchema,
   populateFromTemplateSchema,
   publishItinerarySchema,
@@ -141,6 +143,29 @@ export const itineraryRoutes: FastifyPluginAsync = async (fastify) => {
       return { success: true, data: version };
     },
   );
+
+  // Update a day's live timeline status.
+  // Declared before PATCH /:dayId so "status" is never treated as a day id.
+  fastify.patch<{ Params: TripParams & { dayId: string }; Body: { status: DayStatusValue } }>(
+    "/:workspaceId/trips/:tripId/itinerary/:dayId/status",
+    {
+      preHandler: [
+        permissionMiddleware(PERMISSION_CODES.TRIP_UPDATE),
+        validateBody(updateDayStatusSchema),
+      ],
+    },
+    async (request) => {
+      const day = await ItineraryService.updateDayStatus(
+        request.tenant.workspaceId,
+        request.user!.id,
+        request.params.tripId,
+        request.params.dayId,
+        request.body.status,
+      );
+      return { success: true, data: day };
+    },
+  );
+
 
   // Update a day
   fastify.patch<{ Params: TripParams & { dayId: string } }>(

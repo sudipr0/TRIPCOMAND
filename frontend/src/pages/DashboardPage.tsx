@@ -1,4 +1,4 @@
-import type { ListBookingsQuery, ListInquiriesQuery, ListQuotationsQuery, ListTripsQuery } from '@tripchange/shared';
+import type { ListBookingsQuery, ListInquiriesQuery, ListQuotationsQuery, ListTripsQuery } from '@trailcomand/shared';
 import { Link } from 'react-router-dom';
 
 import { BookingIcon, ChatIcon, FileIcon, TripIcon, WarningIcon } from '@/components/icons';

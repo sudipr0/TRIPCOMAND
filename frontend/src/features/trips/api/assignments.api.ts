@@ -1,7 +1,7 @@
 import type {
   AvailabilityResult, CheckAvailabilityQuery, CreateResourceAssignmentInput, CreateStaffAssignmentInput,
   ResourceAssignmentDetail, StaffAssignmentDetail, UpdateResourceAssignmentInput, UpdateStaffAssignmentInput,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 
 import { apiClient, unwrap, type ApiEnvelope } from '@/lib/api-client';
 

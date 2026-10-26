@@ -1,5 +1,5 @@
 {
-  "name": "@tripchange/backend",
+  "name": "@trailcomand/backend",
   "version": "0.0.1",
   "private": true,
   "main": "./dist/server.js",
@@ -13,6 +13,7 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed-demo": "tsx prisma/seed-demo-data.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {
@@ -22,7 +23,7 @@
     "@fastify/rate-limit": "^9.1.0",
     "@lucia-auth/adapter-prisma": "^4.0.1",
     "@prisma/client": "^5.22.0",
-    "@tripchange/shared": "workspace:*",
+    "@trailcomand/shared": "workspace:*",
     "argon2": "^0.40.3",
     "dotenv": "^16.6.1",
     "fastify": "^4.28.1",

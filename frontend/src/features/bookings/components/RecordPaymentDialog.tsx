@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PAYMENT_TYPES, type BookingDetail, type PaymentType } from '@tripchange/shared';
+import { PAYMENT_TYPES, type BookingDetail, type PaymentType } from '@trailcomand/shared';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

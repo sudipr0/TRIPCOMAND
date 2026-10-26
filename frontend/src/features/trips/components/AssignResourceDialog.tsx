@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
-import type { TripDetail } from '@tripchange/shared';
+import type { TripDetail } from '@trailcomand/shared';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

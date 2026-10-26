@@ -1,4 +1,4 @@
-import type { ListSuppliersQuery, SupplierDetail } from '@tripchange/shared';
+import type { ListSuppliersQuery, SupplierDetail } from '@trailcomand/shared';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ import { useDeleteSupplier, useSuppliers } from '@/features/suppliers/hooks/useS
 import { useSupplierDeadlines } from '@/features/suppliers/hooks/useSupplierBookings';
 import { formatDate } from '@/lib/utils';
 import { useWorkspaceStore } from '@/stores/workspace.store';
-import { PERMISSION_CODES } from '@tripchange/shared';
+import { PERMISSION_CODES } from '@trailcomand/shared';
 
 const PAGE_SIZE = 20;
 

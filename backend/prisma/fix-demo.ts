@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
-import { ALL_PERMISSIONS, ROLE_PERMISSIONS } from '@tripchange/shared';
+import { ALL_PERMISSIONS, ROLE_PERMISSIONS } from '@trailcomand/shared';
 
 const prisma = new PrismaClient();
 
@@ -21,7 +21,7 @@ async function main() {
   let workspace = await prisma.workspace.findUnique({ where: { slug: 'demo' } });
   if (!workspace) {
     workspace = await prisma.workspace.create({
-      data: { name: 'Demo Workspace', slug: 'demo', status: 'ACTIVE' },
+      data: { name: 'TrailComand Demo', slug: 'demo', status: 'ACTIVE' },
     });
   }
   console.log('Workspace:', workspace.id);

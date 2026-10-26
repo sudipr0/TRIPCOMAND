@@ -1,4 +1,4 @@
-import { STAFF_STATUSES, STAFF_TYPES, type StaffStatus, type StaffType } from '@tripchange/shared';
+import { STAFF_STATUSES, STAFF_TYPES, type StaffStatus, type StaffType } from '@trailcomand/shared';
 
 import { Badge } from '@/components/ui/badge';
 

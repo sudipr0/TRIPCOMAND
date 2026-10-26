@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { type ReadinessSummary, type TripDetail } from '@tripchange/shared';
-import { type TripStatus, type TripTravelerDetail } from '@tripchange/shared';
-import { PERMISSION_CODES, type ItineraryDayDetail } from '@tripchange/shared';
+import { type ReadinessSummary, type TripDetail } from '@trailcomand/shared';
+import { type TripStatus, type TripTravelerDetail } from '@trailcomand/shared';
+import { PERMISSION_CODES, type ItineraryDayDetail } from '@trailcomand/shared';
+import type { DayStatusValue } from '@trailcomand/shared';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,10 @@ import { useWorkspaceStore } from '@/stores/workspace.store';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useStaffList } from '@/features/staff/hooks/useStaff';
 import { useDeleteDay } from '@/features/trips/hooks/useTrips';
+import { useUpdateDayStatus } from '@/features/trips/hooks/useTrips';
+import { TripTimeline, DAY_STATUS_LABEL } from '@/components/ui/trip-timeline';
+
+const DAY_STATUS_OPTIONS = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'DELAYED', 'PROBLEM'] as const;
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useTripReadiness } from '@/features/trips/hooks/useTrips';
 import { useBookings } from '@/features/bookings/hooks/useBookings';
@@ -40,6 +45,8 @@ import { AssignOpsManagerDialog } from '@/features/trips/components/AssignOpsMan
 import { StaffTab } from '@/features/trips/components/StaffTab';
 import { ResourcesTab } from '@/features/trips/components/ResourcesTab';
 import { SuppliersTab } from '@/features/suppliers/components/SuppliersTab';
+import { FieldUpdatesTab } from '@/features/field/components/FieldUpdatesTab';
+import { useFieldData } from '@/features/field/useField';
 import { BulkAddTravelersDialog } from '@/features/trips/components/BulkAddTravelersDialog';
 import { PublishItineraryDialog } from '@/features/trips/components/PublishItineraryDialog';
 import { ItineraryVersionsDialog } from '@/features/trips/components/ItineraryVersionsDialog';
@@ -47,8 +54,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { TRIP_TRANSITIONS, TripStatusBadge, tripStatusLabel } from '@/features/trips/components/TripStatusBadge';
 import { ReadinessBadge, readinessTooltip, type ReadinessStatus } from '@/features/trips/components/ReadinessBadge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useDisruptions } from '@/features/disruptions/useDisruptions';
+import { ReportDisruptionDialog } from '@/features/disruptions/components/ReportDisruptionDialog';
+import { FinanceTab } from '@/features/finance/components/FinanceTab';
+import { PortalLinkButton, TripDocumentsDialog } from '@/features/portal/components/TravelerPortalActions';
 
-type TabValue = 'overview' | 'staff' | 'resources' | 'suppliers' | 'itinerary' | 'travelers';
+type TabValue = 'overview' | 'staff' | 'resources' | 'suppliers' | 'itinerary' | 'travelers' | 'field' | 'disruptions' | 'finance';
+const ALL_TABS: TabValue[] = ['overview', 'staff', 'resources', 'suppliers', 'itinerary', 'travelers', 'field', 'disruptions', 'finance'];
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -74,6 +86,33 @@ function maskPassport(passport: string | null) {
   if (!passport) return '—';
   if (passport.length <= 4) return '*'.repeat(passport.length);
   return `${passport.slice(0, 2)}${'*'.repeat(Math.max(2, passport.length - 4))}${passport.slice(-2)}`;
+}
+
+// ── Field updates ────────────────────────────────────────────────────────────
+
+/** Rendered above the tabs so an emergency is impossible to miss on any tab. */
+function EmergencyBanner({ tripId, onOpen }: { tripId: string; onOpen: () => void }) {
+  const field = useFieldData(tripId);
+  const emergencies = (field.data?.reports ?? []).filter((report) => report.reportType === 'EMERGENCY');
+  if (!emergencies.length) return null;
+  const latest = emergencies[0];
+  return (
+    <Card role="alert" className="border-danger bg-[hsl(var(--danger)/0.06)]">
+      <CardContent className="flex flex-wrap items-start gap-3 p-4">
+        <ErrorIcon size={20} className="mt-0.5 shrink-0 text-danger" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-danger">
+            {emergencies.length} emergency {emergencies.length === 1 ? 'report' : 'reports'} from the field
+          </p>
+          <p className="mt-0.5 truncate text-sm text-fg">{latest.description}</p>
+          <p className="mt-0.5 text-xs text-fg-subtle">
+            {latest.location ? `${latest.location} · ` : ''}{formatDateTime(latest.recordedAt)}
+          </p>
+        </div>
+        <Button type="button" size="sm" variant="danger" onClick={onOpen}>Review</Button>
+      </CardContent>
+    </Card>
+  );
 }
 
 // ── Overview ─────────────────────────────────────────────────────────────────
@@ -273,7 +312,9 @@ function ItineraryTab({ trip, locked }: { trip: TripDetail; locked: boolean }) {
   const canUpdate = useWorkspaceStore((state) => state.permissions.includes(PERMISSION_CODES.TRIP_UPDATE));
   const canPublish = useWorkspaceStore((state) => state.permissions.includes(PERMISSION_CODES.TRIP_PUBLISH_ITINERARY));
   const deleteDay = useDeleteDay(trip.id);
+  const updateStatus = useUpdateDayStatus(trip.id);
   const days = trip.itineraryDays ?? [];
+  const [view, setView] = useState<'list' | 'timeline'>('list');
   const [templateOpen, setTemplateOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
   const [versionsOpen, setVersionsOpen] = useState(false);
@@ -291,7 +332,31 @@ function ItineraryTab({ trip, locked }: { trip: TripDetail; locked: boolean }) {
           <span className="text-xs text-fg-subtle">{days.length} {days.length === 1 ? 'day' : 'days'}</span>
           {locked ? <Badge variant="success">Published</Badge> : null}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {days.length ? (
+            <div className="inline-flex rounded-md border-border p-0.5" role="group" aria-label="Itinerary view">
+              <Button
+                type="button"
+                size="sm"
+                variant={view === 'list' ? 'secondary' : 'ghost'}
+                className="h-7"
+                aria-pressed={view === 'list'}
+                onClick={() => setView('list')}
+              >
+                List View
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={view === 'timeline' ? 'secondary' : 'ghost'}
+                className="h-7"
+                aria-pressed={view === 'timeline'}
+                onClick={() => setView('timeline')}
+              >
+                Timeline View
+              </Button>
+            </div>
+          ) : null}
           {!locked && !days.length && editable ? (
             <>
               <Button type="button" size="sm" onClick={() => setTemplateOpen(true)}>Use template</Button>
@@ -322,6 +387,25 @@ function ItineraryTab({ trip, locked }: { trip: TripDetail; locked: boolean }) {
                 <Button type="button" variant="secondary" onClick={() => setAddOpen(true)}>Add day</Button>
               </div>
             ) : undefined}
+          />
+        ) : view === 'timeline' ? (
+          <TripTimeline
+            days={days}
+            renderDayAction={(day) => (
+              <Select
+                aria-label={`Status for day ${day.dayNumber}`}
+                value={day.status}
+                disabled={!canUpdate || updateStatus.isPending}
+                className="h-8 w-36 text-xs"
+                onChange={(event) =>
+                  updateStatus.mutate({ dayId: day.id, status: event.target.value as DayStatusValue })
+                }
+              >
+                {DAY_STATUS_OPTIONS.map((option) => (
+                  <option key={option} value={option}>{DAY_STATUS_LABEL[option]}</option>
+                ))}
+              </Select>
+            )}
           />
         ) : (
           <DayTimeline
@@ -394,6 +478,7 @@ function TravelersTab({ trip }: { trip: TripDetail }) {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [editing, setEditing] = useState<TripTravelerDetail | null>(null);
   const [deleting, setDeleting] = useState<TripTravelerDetail | null>(null);
+  const [documentsOpen, setDocumentsOpen] = useState(false);
   const hasLeader = travelers.some((traveler) => traveler.isTripLeader);
 
   return (
@@ -406,6 +491,7 @@ function TravelersTab({ trip }: { trip: TripDetail }) {
         </div>
         {canUpdate ? (
           <div className="flex flex-wrap gap-2">
+            <Button type="button" size="sm" variant="secondary" onClick={() => setDocumentsOpen(true)}>Documents</Button>
             <Button type="button" size="sm" variant="secondary" onClick={() => setBulkOpen(true)}>Bulk add</Button>
             <Button type="button" size="sm" onClick={() => setAddOpen(true)}>Add traveler</Button>
           </div>
@@ -440,20 +526,23 @@ function TravelersTab({ trip }: { trip: TripDetail }) {
                   <TableCell className="text-sm text-fg-muted">{traveler.isTripLeader ? 'Leader' : 'Member'}</TableCell>
                   {canUpdate ? (
                     <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button type="button" size="sm" variant="ghost" aria-label={`Actions for ${traveler.fullName}`}>
-                            <EditIcon size={16} />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onSelect={() => setEditing(traveler)}><EditIcon size={16} />Edit</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-danger focus:text-danger" onSelect={() => setDeleting(traveler)}>
-                            <DeleteIcon size={16} />Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex items-center justify-end gap-2">
+                        <PortalLinkButton tripId={trip.id} travelerId={traveler.id} travelerName={traveler.fullName} />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button type="button" size="sm" variant="ghost" aria-label={`Actions for ${traveler.fullName}`}>
+                              <EditIcon size={16} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onSelect={() => setEditing(traveler)}><EditIcon size={16} />Edit</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-danger focus:text-danger" onSelect={() => setDeleting(traveler)}>
+                              <DeleteIcon size={16} />Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                   ) : null}
                 </TableRow>
@@ -474,15 +563,21 @@ function TravelersTab({ trip }: { trip: TripDetail }) {
         </CardContent>
       )}
 
-      {addOpen ? <AddTravelerDialog key="add" tripId={trip.id} hasExistingLeader={hasLeader} open onOpenChange={setAddOpen} /> : null}
-      {editing ? <AddTravelerDialog key={editing.id} tripId={trip.id} traveler={editing} hasExistingLeader={hasLeader} open onOpenChange={(next) => { if (!next) setEditing(null); }} /> : null}
+      {addOpen ? <AddTravelerDialog key="add" tripId={trip.id} hasExistingLeader={hasLeader} open onOpenChange={setAddOpen} /> : null}      {editing ? <AddTravelerDialog key={editing.id} tripId={trip.id} traveler={editing} hasExistingLeader={hasLeader} open onOpenChange={(next) => { if (!next) setEditing(null); }} /> : null}
       {bulkOpen ? <BulkAddTravelersDialog tripId={trip.id} open onOpenChange={setBulkOpen} /> : null}
+      <TripDocumentsDialog tripId={trip.id} open={documentsOpen} onOpenChange={setDocumentsOpen} />
       <ConfirmDialog open={Boolean(deleting)} onOpenChange={(next) => { if (!next) setDeleting(null); }}
         title="Remove this traveler?" description={deleting ? `Remove ${deleting.fullName} from this trip? This does not delete the customer record.` : ''}
         confirmLabel="Remove traveler" variant="danger"
         onConfirm={async () => { if (deleting) await deleteTraveler.mutateAsync(deleting.id); setDeleting(null); }} />
     </Card>
   );
+}
+
+function DisruptionsTab({ trip }: { trip: TripDetail }) {
+  const disruptions = useDisruptions(trip.id);
+  const [reportOpen, setReportOpen] = useState(false);
+  return <Card><CardHeader className="flex flex-wrap items-center justify-between gap-2"><div><CardTitle>Disruptions</CardTitle><p className="mt-1 text-sm text-fg-muted">Deterministic impact assessments and recovery plans for this trip.</p></div><Button type="button" size="sm" onClick={() => setReportOpen(true)}>Report disruption</Button></CardHeader><CardContent>{disruptions.isPending ? <p role="status" className="py-8 text-center text-sm text-fg-muted">Loading disruptions...</p> : disruptions.isError ? <p role="alert" className="text-sm text-fg-muted">Could not load disruptions. <Button type="button" variant="link" onClick={() => disruptions.refetch()}>Try again</Button></p> : !disruptions.data.length ? <EmptyState icon={WarningIcon} title="No disruptions for this trip" description="Report an operational issue to generate its impact graph." action={<Button type="button" onClick={() => setReportOpen(true)}>Report disruption</Button>} /> : <div className="space-y-3">{disruptions.data.map((disruption) => <Link key={disruption.id} to={`/disruptions/${disruption.id}`} className="block rounded-md border border-border px-4 py-3 transition-colors hover:bg-bg-muted"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs tabular-nums text-fg-subtle">{disruption.disruptionNumber}</p><p className="mt-1 text-sm font-medium text-fg">{disruption.title}</p><p className="mt-1 text-xs text-fg-muted">{disruption.impacts.length} impacted entities · {disruption.recoveryPlan?.status ?? 'No plan'}</p></div><Badge variant={disruption.status === 'RESOLVED' ? 'success' : disruption.status === 'EXECUTING' ? 'warning' : 'danger'}>{disruption.status.replaceAll('_', ' ')}</Badge></div></Link>)}</div>}</CardContent><ReportDisruptionDialog open={reportOpen} onOpenChange={setReportOpen} tripId={trip.id} /></Card>;
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -496,6 +591,8 @@ function Content({ trip }: { trip: TripDetail }) {
   const statusMutation = useUpdateTripStatus(trip.id);
   const canUpdate = useWorkspaceStore((state) => state.permissions.includes(PERMISSION_CODES.TRIP_UPDATE));
   const canDelete = useWorkspaceStore((state) => state.permissions.includes(PERMISSION_CODES.TRIP_DELETE));
+  // Finance is need-to-know: only roles holding finance:read see the tab at all.
+  const canReadFinance = useWorkspaceStore((state) => state.permissions.includes(PERMISSION_CODES.FINANCE_READ));
   const [activeTab, setActiveTab] = useState<TabValue>('overview');
   const [editOpen, setEditOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
@@ -504,11 +601,12 @@ function Content({ trip }: { trip: TripDetail }) {
 
   useEffect(() => {
     const requested = searchParams.get('tab');
-    if (requested === 'overview' || requested === 'itinerary' || requested === 'travelers') {
-      setActiveTab(requested);
+    if (requested && (ALL_TABS as string[]).includes(requested)) {
+      if (requested === 'finance' && !canReadFinance) return;
+      setActiveTab(requested as TabValue);
       setSearchParams({}, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, canReadFinance]);
 
   const readiness = readinessQuery.data;
   const status = readinessOf(trip.status, readiness);
@@ -549,6 +647,8 @@ function Content({ trip }: { trip: TripDetail }) {
         </div>
       </header>
 
+      <EmergencyBanner tripId={trip.id} onOpen={() => setActiveTab('field')} />
+
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -557,6 +657,9 @@ function Content({ trip }: { trip: TripDetail }) {
           <TabsTrigger value="suppliers">Suppliers</TabsTrigger>
           <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
           <TabsTrigger value="travelers">Travelers</TabsTrigger>
+           <TabsTrigger value="field">Field Updates</TabsTrigger>
+           <TabsTrigger value="disruptions">Disruptions</TabsTrigger>
+           {canReadFinance ? <TabsTrigger value="finance">Finance</TabsTrigger> : null}
         </TabsList>
         <TabsContent value="overview">
           <OverviewTab trip={trip} readiness={readiness} customerName={customerName}
@@ -567,6 +670,9 @@ function Content({ trip }: { trip: TripDetail }) {
         <TabsContent value="suppliers"><SuppliersTab trip={trip} /></TabsContent>
         <TabsContent value="itinerary"><ItineraryTab trip={trip} locked={locked} /></TabsContent>
         <TabsContent value="travelers"><TravelersTab trip={trip} /></TabsContent>
+         <TabsContent value="field"><FieldUpdatesTab tripId={trip.id} /></TabsContent>
+         <TabsContent value="disruptions"><DisruptionsTab trip={trip} /></TabsContent>
+         {canReadFinance ? <TabsContent value="finance"><FinanceTab trip={trip} /></TabsContent> : null}
       </Tabs>
 
       {editOpen ? <TripFormDialog trip={trip} open onOpenChange={setEditOpen} /> : null}

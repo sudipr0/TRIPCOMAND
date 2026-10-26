@@ -4,10 +4,30 @@ node_modules/
 
 # Environment variables (SECURITY: never commit these!)
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 backend/.env
 frontend/.env.local
+
+# Local artifacts that may carry credentials or session state
+cookies.txt
+*.cookies.txt
+.npmrc.local
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+
+# Local databases and dumps
+*.sqlite
+*.sqlite3
+*.db
+pgdata/
+mysql-data/
+dump.rdb
 
 # Build artifacts
 dist/
@@ -15,6 +35,17 @@ build/
 .turbo/
 .next/
 out/
+coverage/
+*.tsbuildinfo
+
+# Local application data and temp files
+uploads/
+tmp/
+temp/
+*.tmp
+*.bak
+*.save
+*.orig
 
 # Logs and OS files
 *.log
@@ -27,3 +58,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Test / QA artifacts
+playwright-report/
+test-results/

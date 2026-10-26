@@ -3,4 +3,4 @@ export {
   updateAgencySettingsSchema,
   type UpdateAgencyProfileInput,
   type UpdateAgencySettingsInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

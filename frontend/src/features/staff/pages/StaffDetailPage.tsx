@@ -1,4 +1,4 @@
-import { PERMISSION_CODES, STAFF_STATUSES, type StaffProfileDetail, type StaffStatus } from '@tripchange/shared';
+import { PERMISSION_CODES, STAFF_STATUSES, type StaffProfileDetail, type StaffStatus } from '@trailcomand/shared';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 

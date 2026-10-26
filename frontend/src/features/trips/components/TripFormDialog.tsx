@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TripDetail } from '@tripchange/shared';
+import type { TripDetail } from '@trailcomand/shared';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

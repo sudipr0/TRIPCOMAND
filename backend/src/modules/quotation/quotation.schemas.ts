@@ -14,4 +14,4 @@ export {
   type UpdateQuotationInput,
   type ListQuotationsQuery,
   type RejectQuotationInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

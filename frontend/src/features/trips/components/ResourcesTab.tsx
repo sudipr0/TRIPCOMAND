@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ResourceAssignmentDetail, TripDetail } from '@tripchange/shared';
+import type { ResourceAssignmentDetail, TripDetail } from '@trailcomand/shared';
 
 import { formatDateRange } from '@/lib/utils';
 import { Button } from '@/components/ui/button';

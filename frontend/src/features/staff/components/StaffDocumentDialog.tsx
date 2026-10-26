@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createStaffDocumentSchema, type CreateStaffDocumentInput } from '@tripchange/shared';
+import { createStaffDocumentSchema, type CreateStaffDocumentInput } from '@trailcomand/shared';
 
 import { fromDateInput } from '@/lib/utils';
 import { AddIcon } from '@/components/icons';

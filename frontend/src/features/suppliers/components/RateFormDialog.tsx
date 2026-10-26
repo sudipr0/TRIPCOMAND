@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { SupplierRateDetail } from '@tripchange/shared';
+import type { SupplierRateDetail } from '@trailcomand/shared';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

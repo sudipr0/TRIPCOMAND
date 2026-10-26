@@ -55,6 +55,7 @@ export {
   ArrowsLeftRight as ReorderIcon,
   Leaf as DietaryIcon,
   FirstAid as MedicalIcon,
+  FirstAid as FirstAidIcon,
   ShieldCheck as InsuranceIcon,
   Users as UsersIcon,
   Stack as TemplateStackIcon,

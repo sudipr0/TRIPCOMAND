@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateDestinationInput, ListDestinationsQuery, UpdateDestinationInput } from '@tripchange/shared';
+import type { CreateDestinationInput, ListDestinationsQuery, UpdateDestinationInput } from '@trailcomand/shared';
 import { toast } from 'sonner';
 
 import { destinationsApi } from '@/features/destinations/api/destinations.api';

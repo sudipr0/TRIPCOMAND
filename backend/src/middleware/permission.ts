@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { AppError } from "../lib/errors.js";
-import type { PermissionCode } from "@tripchange/shared";
+import type { PermissionCode } from "@trailcomand/shared";
 
 export function permissionMiddleware(...requiredPermissions: PermissionCode[]) {
   return async (

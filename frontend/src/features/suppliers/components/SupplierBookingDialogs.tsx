@@ -1,4 +1,4 @@
-import type { SupplierBookingDetail } from '@tripchange/shared';
+import type { SupplierBookingDetail } from '@trailcomand/shared';
 import { useState } from 'react';
 
 import { WarningIcon } from '@/components/icons';

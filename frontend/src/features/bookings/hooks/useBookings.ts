@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CancelBookingInput, CreatePaymentInput, ListBookingsQuery, UpdateBookingInput } from '@tripchange/shared';
+import type { CancelBookingInput, CreatePaymentInput, ListBookingsQuery, UpdateBookingInput } from '@trailcomand/shared';
 
 import { extractError } from '@/lib/api-client';
 import { useWorkspaceStore } from '@/stores/workspace.store';

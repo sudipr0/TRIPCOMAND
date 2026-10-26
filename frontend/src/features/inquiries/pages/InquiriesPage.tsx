@@ -1,4 +1,4 @@
-import { INQUIRY_PRIORITIES, INQUIRY_STATUSES, PERMISSION_CODES, type InquiryPriority, type InquiryStatus } from '@tripchange/shared';
+import { INQUIRY_PRIORITIES, INQUIRY_STATUSES, PERMISSION_CODES, type InquiryPriority, type InquiryStatus } from '@trailcomand/shared';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 

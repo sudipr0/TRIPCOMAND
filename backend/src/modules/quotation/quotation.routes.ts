@@ -4,7 +4,7 @@ import { authMiddleware } from "../../middleware/auth.js";
 import { tenancyMiddleware } from "../../middleware/tenancy.js";
 import { permissionMiddleware } from "../../middleware/permission.js";
 import { validateBody, validateQuery } from "../../middleware/validation.js";
-import { PERMISSION_CODES } from "@tripchange/shared";
+import { PERMISSION_CODES } from "@trailcomand/shared";
 import {
   createQuotationSchema,
   updateQuotationSchema,
@@ -16,7 +16,7 @@ import {
   type UpdateQuotationInput,
   type ListQuotationsQuery,
   type RejectQuotationInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 export const quotationRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.addHook("preHandler", authMiddleware);

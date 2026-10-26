@@ -15,4 +15,4 @@ export {
   type VerifyStaffDocumentInput,
   type StaffType,
   type StaffStatus,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';

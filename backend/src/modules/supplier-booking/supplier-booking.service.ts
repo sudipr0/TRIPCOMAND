@@ -15,7 +15,7 @@ import type {
   RecordSupplierBookingActualCostInput,
   SupplierBookingDetail,
   ListSupplierBookingsResult,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 type RepoBooking = NonNullable<
   Awaited<ReturnType<typeof SupplierBookingRepository.findById>>

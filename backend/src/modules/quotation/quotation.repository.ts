@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
-import type { ListQuotationsQuery } from '@tripchange/shared';
-import type { CreateQuotationInput } from '@tripchange/shared';
-import type { UpdateQuotationInput } from '@tripchange/shared';
+import type { ListQuotationsQuery } from '@trailcomand/shared';
+import type { CreateQuotationInput } from '@trailcomand/shared';
+import type { UpdateQuotationInput } from '@trailcomand/shared';
 
 import { rawPrisma, prisma } from "../../lib/prisma.js";
 

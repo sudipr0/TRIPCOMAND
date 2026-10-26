@@ -11,4 +11,4 @@ export {
   type CreateResourceInput,
   type UpdateResourceInput,
   type ListResourcesQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

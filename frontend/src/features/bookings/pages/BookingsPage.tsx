@@ -1,4 +1,4 @@
-import { BOOKING_STATUSES, PERMISSION_CODES, type BookingStatus } from '@tripchange/shared';
+import { BOOKING_STATUSES, PERMISSION_CODES, type BookingStatus } from '@trailcomand/shared';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 

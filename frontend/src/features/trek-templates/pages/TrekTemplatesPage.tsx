@@ -1,4 +1,4 @@
-import { PERMISSION_CODES, TEMPLATE_STATUSES, TREK_DIFFICULTIES, type ListTrekTemplatesQuery, type TemplateStatus, type TrekDifficulty } from '@tripchange/shared';
+import { PERMISSION_CODES, TEMPLATE_STATUSES, TREK_DIFFICULTIES, type ListTrekTemplatesQuery, type TemplateStatus, type TrekDifficulty } from '@trailcomand/shared';
 import { useEffect, useState, type FormEvent } from 'react';
 
 import { AddIcon, SearchIcon, TemplateIcon } from '@/components/icons';

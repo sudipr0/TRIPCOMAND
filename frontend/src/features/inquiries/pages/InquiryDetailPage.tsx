@@ -1,4 +1,4 @@
-import { PERMISSION_CODES, type InquiryDetail } from '@tripchange/shared';
+import { PERMISSION_CODES, type InquiryDetail } from '@trailcomand/shared';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
@@ -21,6 +21,49 @@ import { useWorkspaceStore } from '@/stores/workspace.store';
 
 const terminal = new Set(['WON', 'LOST', 'DISQUALIFIED']);
 const progressStatuses = ['NEW', 'CONTACTED', 'QUALIFIED', 'NEGOTIATING', 'DISQUALIFIED'];
+
+/** A help request raised from the traveller portal carries this marker in metadata. */
+interface PortalHelpMeta {
+  clientId?: string;
+  travelerId?: string;
+  tripId?: string;
+  tripNumber?: string;
+  travelerName?: string;
+  submittedAt?: string;
+}
+
+function readPortalHelp(metadata: unknown): PortalHelpMeta | null {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null;
+  const help = (metadata as Record<string, unknown>).portalHelp;
+  if (!help || typeof help !== 'object' || Array.isArray(help)) return null;
+  return help as PortalHelpMeta;
+}
+
+/**
+ * Portal help requests file into this same pipeline, so staff need to see at a
+ * glance that this is a traveller in the field asking for help — not a new sales
+ * lead — and which trip it belongs to.
+ */
+function PortalHelpBanner({ help }: { help: PortalHelpMeta }) {
+  return (
+    <div role="note" className="rounded-lg border-warning/40 bg-[hsl(var(--warning)/0.08)] px-4 py-3">
+      <p className="text-sm font-semibold text-fg">Help request from the traveller portal</p>
+      <p className="mt-1 text-sm text-fg-muted">
+        {help.travelerName ?? 'A traveller'} asked for help
+        {help.tripNumber ? ` on ${help.tripNumber}` : ''}
+        {help.submittedAt ? ` · ${formatDateTime(help.submittedAt)}` : ''}.
+        {help.tripId ? (
+          <>
+            {' '}
+            <Link to={`/trips/${help.tripId}?tab=field`} className="font-medium text-accent hover:underline">
+              Open the trip
+            </Link>
+          </>
+        ) : null}
+      </p>
+    </div>
+  );
+}
 
 function Detail({ label, value }: { label: string; value: React.ReactNode }) {
   return <div><dt className="text-xs font-medium uppercase tracking-wide text-fg-subtle">{label}</dt><dd className="mt-1 break-words text-sm text-fg">{value || '—'}</dd></div>;
@@ -46,6 +89,7 @@ function InquiryContent({ inquiry }: { inquiry: InquiryDetail }) {
   const actors = new Map(members.data?.map((member) => [member.userId, `${member.user.firstName} ${member.user.lastName}`.trim()]));
   const actorIds = new Map(inquiry.activities?.map((activity) => [activity.id, activity.userId]));
   const timeline = activities.data?.map((activity) => ({ ...activity, userId: actorIds.get(activity.id) ?? null }));
+  const portalHelp = readPortalHelp(inquiry.metadata);
 
   return <>
     <header className="flex flex-wrap items-start justify-between gap-4">
@@ -69,6 +113,7 @@ function InquiryContent({ inquiry }: { inquiry: InquiryDetail }) {
     {quotationOpen ? (
       <QuotationFormDialog key={`quotation-${inquiry.id}`} open inquiry={inquiry} onOpenChange={setQuotationOpen} />
     ) : null}
+    {portalHelp ? <PortalHelpBanner help={portalHelp} /> : null}
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
       <main className="min-w-0 space-y-6">
         <Card><CardHeader><CardTitle>Trip request</CardTitle></CardHeader><CardContent><dl className="grid gap-5 sm:grid-cols-2">

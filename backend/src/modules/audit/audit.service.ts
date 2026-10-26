@@ -1,6 +1,6 @@
 import { AuditRepository } from "./audit.repository.js";
 import type { QueryAuditLogsInput } from "./audit.schemas.js";
-import type { AuditEventDetail } from "@tripchange/shared";
+import type { AuditEventDetail } from "@trailcomand/shared";
 
 export class AuditService {
   static async queryLogs(

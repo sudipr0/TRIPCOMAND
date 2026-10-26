@@ -1,4 +1,4 @@
-import type { PermissionCode, WorkspaceSummary } from '@tripchange/shared';
+import type { PermissionCode, WorkspaceSummary } from '@trailcomand/shared';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -42,7 +42,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       hasPermission: (permission) => get().permissions.includes(permission),
     }),
     {
-      name: 'tripchange-workspace',
+      name: 'trailcomand-workspace',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ currentWorkspaceId: state.currentWorkspaceId }),
     },

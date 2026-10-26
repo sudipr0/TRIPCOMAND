@@ -1,4 +1,4 @@
-import { PERMISSION_CODES, type DestinationDetail, type ListDestinationsQuery } from '@tripchange/shared';
+import { PERMISSION_CODES, type DestinationDetail, type ListDestinationsQuery } from '@trailcomand/shared';
 import { useEffect, useRef, useState } from 'react';
 
 import { AddIcon, DeleteIcon, DestinationIcon, EditIcon, MoreIcon, SearchIcon } from '@/components/icons';

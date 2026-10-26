@@ -4,13 +4,13 @@ import { authMiddleware } from "../../middleware/auth.js";
 import { tenancyMiddleware } from "../../middleware/tenancy.js";
 import { permissionMiddleware } from "../../middleware/permission.js";
 import { validateBody, validateQuery } from "../../middleware/validation.js";
-import { PERMISSION_CODES } from "@tripchange/shared";
+import { PERMISSION_CODES } from "@trailcomand/shared";
 import {
   createPaymentSchema,
   listPaymentsQuerySchema,
   type CreatePaymentInput,
   type ListPaymentsQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 export const paymentRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.addHook("preHandler", authMiddleware);

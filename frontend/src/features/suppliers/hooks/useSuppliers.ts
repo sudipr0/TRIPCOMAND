@@ -5,7 +5,7 @@ import type {
   ListSuppliersQuery,
   UpdateSupplierInput,
   UpdateSupplierRateInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 

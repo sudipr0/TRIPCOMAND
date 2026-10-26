@@ -12,7 +12,7 @@ async function startServer() {
 
     await app.listen({ port, host });
     logger.info(
-      `🚀 TripChange Intelligence API running at http://${host}:${port}`,
+      `🚀 TrailComand API running at http://${host}:${port}`,
     );
 
     const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM"];

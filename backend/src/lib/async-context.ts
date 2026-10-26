@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { TenantContext } from "@tripchange/shared";
+import type { TenantContext } from "@trailcomand/shared";
 
 export interface RequestStore {
   requestId: string;

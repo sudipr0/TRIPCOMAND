@@ -8,7 +8,7 @@ import type {
   ListResourcesQuery,
   ResourceDetail,
   ListResourcesResult,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 function toResourceDetail(
   r: Prisma.ResourceGetPayload<object>,

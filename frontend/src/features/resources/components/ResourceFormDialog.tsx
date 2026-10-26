@@ -1,4 +1,4 @@
-import { RESOURCE_STATUSES, RESOURCE_TYPES, type ResourceDetail, type ResourceStatus, type ResourceType } from '@tripchange/shared';
+import { RESOURCE_STATUSES, RESOURCE_TYPES, type ResourceDetail, type ResourceStatus, type ResourceType } from '@trailcomand/shared';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';

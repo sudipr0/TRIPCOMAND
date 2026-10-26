@@ -1,19 +1,19 @@
 {
-  "name": "tripchange",
+  "name": "trailcomand",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter @tripchange/shared run build && pnpm --filter @tripchange/backend run build && pnpm --filter frontend run build",
-    "typecheck": "pnpm --filter @tripchange/shared run typecheck && pnpm --filter @tripchange/backend run typecheck && pnpm --filter frontend run typecheck",
-    "test": "pnpm --filter @tripchange/backend run test",
-    "db:generate": "pnpm --filter @tripchange/backend db:generate",
-    "db:migrate": "pnpm --filter @tripchange/backend db:migrate",
-    "db:push": "pnpm --filter @tripchange/backend db:push",
-    "db:seed": "pnpm --filter @tripchange/backend db:seed",
-    "db:studio": "pnpm --filter @tripchange/backend db:studio",
+    "build": "pnpm --filter @trailcomand/shared run build && pnpm --filter @trailcomand/backend run build && pnpm --filter frontend run build",
+    "typecheck": "pnpm --filter @trailcomand/shared run typecheck && pnpm --filter @trailcomand/backend run typecheck && pnpm --filter frontend run typecheck",
+    "test": "pnpm --filter @trailcomand/backend run test",
+    "db:generate": "pnpm --filter @trailcomand/backend db:generate",
+    "db:migrate": "pnpm --filter @trailcomand/backend db:migrate",
+    "db:push": "pnpm --filter @trailcomand/backend db:push",
+    "db:seed": "pnpm --filter @trailcomand/backend db:seed",
+    "db:studio": "pnpm --filter @trailcomand/backend db:studio",
     "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "pnpm --filter @tripchange/backend dev",
-    "dev": "pnpm --filter @tripchange/backend run dev",
-    "start": "pnpm --filter @tripchange/backend run start"
+    "dev:backend": "pnpm --filter @trailcomand/backend dev",
+    "dev": "pnpm --filter @trailcomand/backend run dev",
+    "start": "pnpm --filter @trailcomand/backend run start"
   },
   "devDependencies": {
     "turbo": "^2.0.0",

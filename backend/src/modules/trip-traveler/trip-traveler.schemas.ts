@@ -6,4 +6,4 @@ export {
   type CreateTripTravelerInput,
   type UpdateTripTravelerInput,
   type BulkAddTravelersInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

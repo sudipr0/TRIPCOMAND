@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { Prisma as PrismaNs } from "@prisma/client";
-import type { CreateQuotationInput } from '@tripchange/shared';
-import type { UpdateQuotationInput } from '@tripchange/shared';
-import type { ListQuotationsResult } from '@tripchange/shared';
-import type { ListQuotationsQuery, QuotationDetail } from '@tripchange/shared';
+import type { CreateQuotationInput } from '@trailcomand/shared';
+import type { UpdateQuotationInput } from '@trailcomand/shared';
+import type { ListQuotationsResult } from '@trailcomand/shared';
+import type { ListQuotationsQuery, QuotationDetail } from '@trailcomand/shared';
 
 import { AppError } from "../../lib/errors.js";
 import { rawPrisma } from "../../lib/prisma.js";
@@ -25,7 +25,7 @@ function toLineItemDetail(item: {
   isOptional: boolean;
   createdAt: Date;
   updatedAt: Date;
-}): import("@tripchange/shared").QuotationLineItemDetail {
+}): import("@trailcomand/shared").QuotationLineItemDetail {
   return {
     id: item.id,
     quotationId: item.quotationId,
@@ -49,7 +49,7 @@ function toVersionDetail(v: {
   changedById: string | null;
   changeReason: string | null;
   createdAt: Date;
-}): import("@tripchange/shared").QuotationVersionDetail {
+}): import("@trailcomand/shared").QuotationVersionDetail {
   return {
     id: v.id,
     quotationId: v.quotationId,

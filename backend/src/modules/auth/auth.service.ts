@@ -11,7 +11,7 @@ import type {
   ForgotPasswordInput,
   ResetPasswordInput,
   UserProfile,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 export class AuthService {
   static async register(

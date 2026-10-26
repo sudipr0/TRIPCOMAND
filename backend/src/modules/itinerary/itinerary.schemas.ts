@@ -4,10 +4,14 @@ export {
   reorderItineraryDaysSchema,
   populateFromTemplateSchema,
   publishItinerarySchema,
+  updateDayStatusSchema,
+  dayStatusSchema,
+  DAY_STATUSES,
+  type UpdateDayStatusInput,
   itineraryDayBaseFields,
   type CreateItineraryDayInput,
   type UpdateItineraryDayInput,
   type ReorderItineraryDaysInput,
   type PopulateFromTemplateInput,
   type PublishItineraryInput,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';

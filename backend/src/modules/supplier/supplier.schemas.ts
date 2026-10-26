@@ -19,4 +19,4 @@ export {
   type UpdateSupplierRateInput,
   type ListSupplierRatesQuery,
   type SupplierAlternativesQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

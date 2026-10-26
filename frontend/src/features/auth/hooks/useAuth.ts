@@ -1,4 +1,4 @@
-import type { LoginInput, RegisterInput } from '@tripchange/shared';
+import type { LoginInput, RegisterInput } from '@trailcomand/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
-import type { AssignTripInput, BulkAddTravelersInput, ChangeTripStatusInput, CreateItineraryDayInput, CreateResourceAssignmentInput, CreateStaffAssignmentInput, CreateTripTravelerInput, ListTripsQuery, PopulateFromTemplateInput, PublishItineraryInput, ReorderItineraryDaysInput, UpdateItineraryDayInput, UpdateTripInput, UpdateTripTravelerInput } from '@tripchange/shared';
+import type { AssignTripInput, BulkAddTravelersInput, ChangeTripStatusInput, CreateItineraryDayInput, CreateResourceAssignmentInput, CreateStaffAssignmentInput, CreateTripTravelerInput, DayStatusValue, ListTripsQuery, PopulateFromTemplateInput, PublishItineraryInput, ReorderItineraryDaysInput, UpdateItineraryDayInput, UpdateTripInput, UpdateTripTravelerInput } from '@trailcomand/shared';
 
 import { fromDateInput } from '@/lib/utils';
 import { extractError } from '@/lib/api-client';
@@ -199,6 +199,19 @@ export function useUpdateDay(tripId: string) {
       return invalidateTrip(queryClient, requireWorkspace(workspaceId), tripId);
     },
     onError: (error) => showError(error, 'Could not update the day'),
+  });
+}
+
+export function useUpdateDayStatus(tripId: string) {
+  const workspaceId = useWorkspaceStore((state) => state.currentWorkspaceId);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ dayId, status }: { dayId: string; status: DayStatusValue }) =>
+      tripsApi.updateDayStatus(requireWorkspace(workspaceId), tripId, dayId, status),
+    onSuccess: () => {
+      return invalidateTrip(queryClient, requireWorkspace(workspaceId), tripId);
+    },
+    onError: (error) => showError(error, 'Could not change the day status'),
   });
 }
 

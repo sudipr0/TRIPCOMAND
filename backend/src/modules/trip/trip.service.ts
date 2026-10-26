@@ -1,8 +1,8 @@
 import type { Prisma } from "@prisma/client";
-import type { ReadinessSummary } from '@tripchange/shared';
-import type { TripDetail, ListTripsResult } from '@tripchange/shared';
-import type { ListTripsQuery, AssignTripInput } from '@tripchange/shared';
-import type { CreateTripInput, UpdateTripInput } from '@tripchange/shared';
+import type { ReadinessSummary } from '@trailcomand/shared';
+import type { TripDetail, ListTripsResult } from '@trailcomand/shared';
+import type { ListTripsQuery, AssignTripInput } from '@trailcomand/shared';
+import type { CreateTripInput, UpdateTripInput } from '@trailcomand/shared';
 
 import { AppError } from "../../lib/errors.js";
 import { rawPrisma } from "../../lib/prisma.js";
@@ -52,7 +52,11 @@ function toItineraryDayDetail(d: TripWithRelations["itineraryDays"][number]) {
     title: d.title,
     description: d.description,
     location: d.location,
+    startLocation: d.startLocation,
+    endLocation: d.endLocation,
     altitude: d.altitude,
+    elevationGain: d.elevationGain,
+    distanceKm: d.distanceKm ? d.distanceKm.toString() : null,
     startTime: d.startTime,
     endTime: d.endTime,
     walkingHours: d.walkingHours ? d.walkingHours.toString() : null,
@@ -61,6 +65,7 @@ function toItineraryDayDetail(d: TripWithRelations["itineraryDays"][number]) {
     activities: d.activities,
     clientVisible: d.clientVisible,
     internalNotes: d.internalNotes,
+    status: d.status,
     createdAt: d.createdAt.toISOString(),
     updatedAt: d.updatedAt.toISOString(),
   };

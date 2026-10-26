@@ -1,4 +1,4 @@
-import { SUPPLIER_CATEGORIES, SUPPLIER_STATUSES, type SupplierCategory, type SupplierDetail, type SupplierStatus } from '@tripchange/shared';
+import { SUPPLIER_CATEGORIES, SUPPLIER_STATUSES, type SupplierCategory, type SupplierDetail, type SupplierStatus } from '@trailcomand/shared';
 import { useState } from 'react';
 
 import { StarIcon } from '@/components/icons';

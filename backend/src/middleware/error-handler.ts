@@ -2,7 +2,7 @@ import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError } from "zod";
 import { AppError } from "../lib/errors.js";
 import { logger } from "../lib/logger.js";
-import { ERROR_CODES, type ApiResponse } from "@tripchange/shared";
+import { ERROR_CODES, type ApiResponse } from "@trailcomand/shared";
 
 export function errorHandler(
   error: FastifyError | Error,

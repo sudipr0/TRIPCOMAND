@@ -1,4 +1,4 @@
-import type { SupplierCategory } from '@tripchange/shared';
+import type { SupplierCategory } from '@trailcomand/shared';
 
 import { Badge, type BadgeVariant } from '@/components/ui/badge';
 

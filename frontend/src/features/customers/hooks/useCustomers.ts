@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateCustomerInput, ListCustomersQuery, UpdateCustomerInput } from '@tripchange/shared';
+import type { CreateCustomerInput, ListCustomersQuery, UpdateCustomerInput } from '@trailcomand/shared';
 import { toast } from 'sonner';
 
 import { customersApi } from '@/features/customers/api/customers.api';

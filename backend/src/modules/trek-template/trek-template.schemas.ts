@@ -17,4 +17,4 @@ export {
   type ReorderTrekTemplateDaysInput,
   type TrekDifficulty,
   type TemplateStatus,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

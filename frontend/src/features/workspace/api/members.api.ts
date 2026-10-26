@@ -1,4 +1,4 @@
-import type { MemberDetail } from '@tripchange/shared';
+import type { MemberDetail } from '@trailcomand/shared';
 
 import { apiClient, unwrap } from '@/lib/api-client';
 

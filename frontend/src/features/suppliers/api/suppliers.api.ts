@@ -9,7 +9,7 @@ import type {
   SupplierRateDetail,
   UpdateSupplierInput,
   UpdateSupplierRateInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
 
 import { apiClient, unwrap, type ApiEnvelope } from "@/lib/api-client";
 

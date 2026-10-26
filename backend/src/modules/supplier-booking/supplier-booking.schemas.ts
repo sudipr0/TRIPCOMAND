@@ -16,4 +16,4 @@ export {
   type RecordSupplierQuoteInput,
   type CancelSupplierBookingInput,
   type RecordSupplierBookingActualCostInput,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";

@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   STAFF_STATUSES, STAFF_TYPES, createStaffSchema, staffStatusSchema, staffTypeSchema,
   updateStaffSchema, type CreateStaffInput, type StaffProfileDetail, type UpdateStaffInput,
-} from '@tripchange/shared';
+} from '@trailcomand/shared';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';

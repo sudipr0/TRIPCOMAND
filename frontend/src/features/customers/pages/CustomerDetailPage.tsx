@@ -1,4 +1,4 @@
-import { PERMISSION_CODES, type CustomerDetail, type InquiryDetail } from '@tripchange/shared';
+import { PERMISSION_CODES, type CustomerDetail, type InquiryDetail } from '@trailcomand/shared';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 

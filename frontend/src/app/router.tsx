@@ -6,6 +6,7 @@ import { ForgotPasswordForm } from '@/features/auth/components/ForgotPasswordFor
 import { ResetPasswordForm } from '@/features/auth/components/ResetPasswordForm';
 import { AuthLayout } from '@/app/layouts/AuthLayout';
 import { WorkspaceLayout } from '@/app/layouts/WorkspaceLayout';
+import { FieldLayout } from '@/app/layouts/FieldLayout';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { NewWorkspacePage } from '@/pages/workspaces/NewWorkspacePage';
 import { SettingsPage } from '@/pages/SettingsPage';
@@ -20,6 +21,10 @@ import { TripsPage, TripDetailPage } from '@/features/trips/pages';
 import { ResourcesPage } from '@/features/resources/pages';
 import { AvailabilityPage } from '@/features/availability/pages';
 import { SuppliersPage, SupplierDetailPage } from '@/features/suppliers/pages';
+import { FieldHomePage, FieldTripPage } from '@/features/field/pages';
+import { DisruptionsPage, DisruptionDetailPage } from '@/features/disruptions/pages';
+import { FinanceDashboardPage } from '@/features/finance/pages';
+import { PortalPage } from '@/features/portal/pages';
 
 
 
@@ -34,6 +39,9 @@ export const router = createBrowserRouter([
     ],
   },
   { path: '/workspaces/new', element: <NewWorkspacePage /> },
+  // Public client portal: the URL token is the only credential, so this sits
+  // outside both the auth and workspace layouts — no sidebar, no session.
+  { path: '/portal/view/:token', element: <PortalPage /> },
   {
     element: <WorkspaceLayout />,
     children: [
@@ -54,13 +62,23 @@ export const router = createBrowserRouter([
       { path: '/quotations/:quotationId', element: <QuotationDetailPage /> },
       { path: '/bookings', element: <BookingsPage /> },
       { path: '/bookings/:bookingId', element: <BookingDetailPage /> },
+      { path: '/finance', element: <FinanceDashboardPage /> },
       { path: '/trips', element: <TripsPage /> },
       { path: '/trips/:tripId', element: <TripDetailPage /> },
+      { path: '/disruptions', element: <DisruptionsPage /> },
+      { path: '/disruptions/:disruptionId', element: <DisruptionDetailPage /> },
       { path: '/resources', element: <ResourcesPage /> },
       { path: '/availability', element: <AvailabilityPage /> },
       { path: '/suppliers', element: <SuppliersPage /> },
       { path: '/suppliers/:supplierId', element: <SupplierDetailPage /> },
       { path: '/settings', element: <SettingsPage /> },
+    ],
+  },
+  {
+    element: <FieldLayout />,
+    children: [
+      { path: '/field', element: <FieldHomePage /> },
+      { path: '/field/trips/:tripId', element: <FieldTripPage /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

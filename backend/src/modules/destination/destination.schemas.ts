@@ -5,4 +5,4 @@ export {
   type CreateDestinationInput,
   type UpdateDestinationInput,
   type ListDestinationsQuery,
-} from "@tripchange/shared";
+} from "@trailcomand/shared";
