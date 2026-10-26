@@ -349,6 +349,14 @@ export class PortalRepository {
     });
   }
 
+  /** Existing inquiry numbers in the workspace for one year prefix, used to continue the sequence. */
+  static async findInquiryNumbers(workspaceId: string, prefix: string) {
+    return rawPrisma.inquiry.findMany({
+      where: { workspaceId, inquiryNumber: { startsWith: prefix } },
+      select: { inquiryNumber: true },
+    });
+  }
+
   /** Raises a traveller-originated help request in the office inquiry pipeline. */
   static async createHelpInquiry(input: {
     workspaceId: string;

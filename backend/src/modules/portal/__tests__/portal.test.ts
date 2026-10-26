@@ -463,6 +463,7 @@ describe('PortalService.submitHelpRequest', () => {
       customerId: 'customer-1',
       fullName: 'Sarah Mitchell',
     } as never);
+    vi.spyOn(PortalRepository, 'findInquiryNumbers').mockResolvedValue([] as never);
   });
 
   it('files the request against the token trip, traveller and workspace', async () => {

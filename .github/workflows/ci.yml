@@ -48,6 +48,12 @@ jobs:
         # committed, so it must be compiled before typecheck and tests.
         run: pnpm --filter @trailcomand/shared build
 
+      - name: Generate Prisma client
+        # The generated client lives in node_modules and is not committed, so a
+        # clean checkout has no types for it. Generation reads schema.prisma
+        # only and does not connect to a database.
+        run: pnpm db:generate
+
       - name: Typecheck
         run: pnpm typecheck
 

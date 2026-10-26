@@ -433,16 +433,8 @@ export class PortalService {
 
   /** Next inquiry number in the workspace's per-year sequence. */
   private static async nextInquiryNumber(workspaceId: string): Promise<string> {
-    const { rawPrisma } = await import("../../lib/prisma.js");
-    const year = new Date().getFullYear();
-    const prefix = `INQ-${year}-`;
-    const existing = await rawPrisma.inquiry.findMany({
-      where: {
-        workspaceId,
-        inquiryNumber: { startsWith: prefix },
-      },
-      select: { inquiryNumber: true },
-    });
+    const prefix = `INQ-${new Date().getFullYear()}-`;
+    const existing = await PortalRepository.findInquiryNumbers(workspaceId, prefix);
     const highest = existing.reduce((max, row) => {
       const n = Number.parseInt(row.inquiryNumber.slice(prefix.length), 10);
       return Number.isFinite(n) && n > max ? n : max;
