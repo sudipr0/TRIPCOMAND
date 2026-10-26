@@ -35,14 +35,14 @@ Delivered as independent backend modules under `backend/src/modules/` and matchi
 
 ## Technology stack
 
-| Layer | Technology |
-| --- | --- |
-| Frontend | React 18, TypeScript, Vite, React Router, TanStack Query, Tailwind CSS |
-| Backend | Node.js, TypeScript, Fastify |
-| Data | PostgreSQL, Prisma ORM |
-| Auth | Lucia sessions, Argon2 password hashing |
-| Shared | `@trailcomand/shared` — types, Zod schemas, permission and role constants |
-| Tooling | pnpm workspaces, Vitest, TypeScript compiler |
+| Layer    | Technology                                                                |
+| -------- | ------------------------------------------------------------------------- |
+| Frontend | React 18, TypeScript, Vite, React Router, TanStack Query, Tailwind CSS    |
+| Backend  | Node.js, TypeScript, Fastify                                              |
+| Data     | PostgreSQL, Prisma ORM                                                    |
+| Auth     | Lucia sessions, Argon2 password hashing                                   |
+| Shared   | `@trailcomand/shared` — types, Zod schemas, permission and role constants |
+| Tooling  | pnpm workspaces, Vitest, TypeScript compiler                              |
 
 ---
 
@@ -116,19 +116,19 @@ The seed script prints the demo credentials it creates in development. Do not re
 
 Copy `.env.example` to `.env` and fill in your own values. The template ships **placeholder values only** — real environment files are git-ignored and must never be committed.
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | PostgreSQL connection string used by Prisma |
-| `SESSION_SECRET` | Yes | Secret used to sign session cookies (use a long random value) |
-| `API_PORT` | No | Backend listen port (default `3001`) |
-| `API_URL` | No | Public base URL of the backend |
-| `WEB_URL` | No | Public base URL of the frontend (used for CORS and links) |
-| `NODE_ENV` | No | `development` \| `production` \| `test` |
-| `REDIS_URL` | No | Redis connection string; omitting it uses the in-memory fallback |
-| `EMAIL_FROM` | No | Sender address for transactional email |
-| `RESEND_API_KEY` | No | Resend API key; when unset, email is logged instead of sent |
-| `GROQ_API_KEY` | No | Optional AI provider key |
-| `GOOGLE_AI_API_KEY` | No | Optional AI provider key |
+| Variable            | Required | Purpose                                                          |
+| ------------------- | -------- | ---------------------------------------------------------------- |
+| `DATABASE_URL`      | Yes      | PostgreSQL connection string used by Prisma                      |
+| `SESSION_SECRET`    | Yes      | Secret used to sign session cookies (use a long random value)    |
+| `API_PORT`          | No       | Backend listen port (default `3001`)                             |
+| `API_URL`           | No       | Public base URL of the backend                                   |
+| `WEB_URL`           | No       | Public base URL of the frontend (used for CORS and links)        |
+| `NODE_ENV`          | No       | `development` \| `production` \| `test`                          |
+| `REDIS_URL`         | No       | Redis connection string; omitting it uses the in-memory fallback |
+| `EMAIL_FROM`        | No       | Sender address for transactional email                           |
+| `RESEND_API_KEY`    | No       | Resend API key; when unset, email is logged instead of sent      |
+| `GROQ_API_KEY`      | No       | Optional AI provider key                                         |
+| `GOOGLE_AI_API_KEY` | No       | Optional AI provider key                                         |
 
 The frontend reads `VITE_API_URL` from `frontend/.env.local` (see `frontend/.env.example`). When it is unset the client calls `http://localhost:3001`, which the Vite dev proxy forwards.
 
@@ -158,14 +158,14 @@ Use `db:migrate` for anything shared or deployed; `db:push` is intended for disp
 
 ## Development commands
 
-| Command | Description |
-| --- | --- |
-| `pnpm install` | Install all workspace dependencies |
-| `pnpm dev` | Run the backend API in watch mode (`:3001`) |
-| `pnpm dev:frontend` | Run the Vite dev server (`:5173`) |
-| `pnpm dev:backend` | Explicit alias for `pnpm dev` |
-| `pnpm build` | Build shared, backend, and frontend |
-| `pnpm start` | Run the compiled backend (`pnpm build` first) |
+| Command             | Description                                   |
+| ------------------- | --------------------------------------------- |
+| `pnpm install`      | Install all workspace dependencies            |
+| `pnpm dev`          | Run the backend API in watch mode (`:3001`)   |
+| `pnpm dev:frontend` | Run the Vite dev server (`:5173`)             |
+| `pnpm dev:backend`  | Explicit alias for `pnpm dev`                 |
+| `pnpm build`        | Build shared, backend, and frontend           |
+| `pnpm start`        | Run the compiled backend (`pnpm build` first) |
 
 Run both apps side by side in two terminals; the frontend proxies `/api` to the backend automatically.
 
@@ -191,8 +191,9 @@ Every push and pull request targeting `main` runs [`.github/workflows/ci.yml`](.
 2. Install pnpm `9.0.0` and Node.js `20` with pnpm caching.
 3. `pnpm install --frozen-lockfile` — the committed lockfile is authoritative.
 4. Build `@trailcomand/shared` (its `dist/` is not committed, and both other packages typecheck against it).
-5. `pnpm typecheck`.
-6. `pnpm test`.
+5. `pnpm db:generate` — generate the Prisma client. It is produced into `node_modules`, is never committed, and is required for typecheck on a clean checkout. This step reads `schema.prisma` only and connects to no database.
+6. `pnpm typecheck`.
+7. `pnpm test`.
 
 The workflow has a 15-minute timeout, read-only `contents` permission, no secrets, and no database service — it only runs the checks that work without external infrastructure. Job status is visible on the [Actions tab](https://github.com/sudipr0/TRIPCOMAND/actions).
 
