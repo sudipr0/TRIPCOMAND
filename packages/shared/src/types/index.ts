@@ -1492,3 +1492,83 @@ export interface StoredDocumentMetadata {
   createdAt: string;
   downloadUrl: string;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 12 — AI Operations Copilot
+//
+// The copilot only ever produces draft text for human review. Nothing here is
+// persisted, sent, or treated as an operational fact.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Tone the staff member asked for when drafting a traveler update. */
+export const AI_TRAVELER_TONES = ["reassuring", "urgent"] as const;
+export type AITravelerTone = (typeof AI_TRAVELER_TONES)[number];
+
+/** Which copilot operation produced a draft. */
+export const AI_OPERATIONS = [
+  "traveler_update",
+  "supplier_email",
+  "trip_summary",
+] as const;
+export type AIOperation = (typeof AI_OPERATIONS)[number];
+
+/** Facts the server could not verify; surfaced so staff know what to fill in. */
+export const AI_MISSING_FACTS = [
+  "SUPPLIER_EMAIL",
+  "TRIP_NOTES",
+  "RECOVERY_NEXT_STEPS",
+] as const;
+export type AIMissingFact = (typeof AI_MISSING_FACTS)[number];
+
+/**
+ * Capability probe returned to the browser. It says *whether* AI drafting is
+ * available — never the key, the model name, or any provider internals.
+ */
+export interface AICapability {
+  enabled: boolean;
+  /** Human-safe reason shown when `enabled` is false. */
+  reason: string | null;
+}
+
+/** Safe metadata attached to every draft. */
+export interface AIDraftMetadata {
+  model: string;
+  /** True when no facts had to be guessed — the model had all required context. */
+  grounded: boolean;
+  /** Machine-readable list of facts staff must supply before sending. */
+  missingFacts: AIMissingFact[];
+  /** Always true. Present so callers cannot mistake a draft for a sent message. */
+  requiresReview: true;
+}
+
+export interface AITravelerUpdateDraft {
+  operation: "traveler_update";
+  /** WhatsApp-style message body. */
+  body: string;
+  tone: AITravelerTone;
+  metadata: AIDraftMetadata;
+}
+
+export interface AISupplierEmailDraft {
+  operation: "supplier_email";
+  subject: string;
+  body: string;
+  /**
+   * Verified recipient address, or null when the supplier record has none.
+   * Null means staff must enter the address manually — never invented.
+   */
+  recipient: string | null;
+  metadata: AIDraftMetadata;
+}
+
+export interface AITripSummaryDraft {
+  operation: "trip_summary";
+  /** Exactly three bullets, in order. */
+  bullets: string[];
+  metadata: AIDraftMetadata;
+}
+
+export type AIDraft =
+  | AITravelerUpdateDraft
+  | AISupplierEmailDraft
+  | AITripSummaryDraft;

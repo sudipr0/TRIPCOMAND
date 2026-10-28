@@ -35,6 +35,7 @@ import { financeRoutes } from './modules/finance/finance.routes.js';
 import { portalRoutes, portalAdminRoutes } from './modules/portal/index.js';
 import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
 import { documentRoutes } from './modules/documents/document.routes.js';
+import { aiRoutes } from './modules/ai/ai.routes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -117,6 +118,8 @@ export async function buildApp() {
   // Phase 11 — business intelligence and secure local document storage.
   await app.register(analyticsRoutes, { prefix: '/api/v1/workspaces' });
   await app.register(documentRoutes, { prefix: '/api/v1/workspaces' });
+  // Phase 12 — AI Operations Copilot. Drafts only; nothing is sent or persisted.
+  await app.register(aiRoutes, { prefix: '/api/v1/workspaces' });
 
   return app;
 }

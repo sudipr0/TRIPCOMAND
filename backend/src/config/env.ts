@@ -17,6 +17,12 @@ const envSchema = z.object({
   REDIS_URL: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default('noreply@trailcomand.app'),
+  // AI Copilot (Phase 12). Server-side only — never forwarded to the client.
+  // An empty or whitespace-only value is treated as "not configured" by the AI
+  // service; we do not fail startup so unrelated features keep working.
+  GROQ_API_KEY: z.string().optional(),
+  GROQ_MODEL: z.string().trim().min(1).default('llama-3.1-8b-instant'),
+  GROQ_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120000).default(30000),
 });
 
 const parsed = envSchema.safeParse(process.env);

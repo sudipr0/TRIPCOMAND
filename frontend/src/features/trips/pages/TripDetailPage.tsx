@@ -56,6 +56,7 @@ import { ReadinessBadge, readinessTooltip, type ReadinessStatus } from '@/featur
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useDisruptions } from '@/features/disruptions/useDisruptions';
 import { ReportDisruptionDialog } from '@/features/disruptions/components/ReportDisruptionDialog';
+import { TripAiButton } from '@/features/ai/components/TripAiActions';
 import { FinanceTab } from '@/features/finance/components/FinanceTab';
 import { PortalLinkButton, TripDocumentsDialog } from '@/features/portal/components/TravelerPortalActions';
 
@@ -629,6 +630,7 @@ function Content({ trip }: { trip: TripDetail }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <TripAiButton tripId={trip.id} />
           {canUpdate ? <Button type="button" size="sm" variant="secondary" onClick={() => setEditOpen(true)}><EditIcon size={16} />Edit</Button> : null}
           {transitions.length ? (
             <Button type="button" size="sm" variant="secondary" onClick={() => setStatusOpen(true)}>Change status</Button>

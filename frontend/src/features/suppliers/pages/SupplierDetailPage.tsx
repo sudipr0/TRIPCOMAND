@@ -16,6 +16,7 @@ import { RateFormDialog } from '@/features/suppliers/components/RateFormDialog';
 import { SupplierBookingStatusBadge } from '@/features/suppliers/components/SupplierBookingStatusBadge';
 import { SupplierCategoryBadge, SupplierStatusBadge } from '@/features/suppliers/components/SupplierBadges';
 import { SupplierFormDialog } from '@/features/suppliers/components/SupplierFormDialog';
+import { SupplierDraftEmailButton } from '@/features/ai/components/SupplierAiActions';
 import { RatingStars } from '@/features/suppliers/pages/SuppliersPage';
 import {
   useActiveSupplierBookings, useAlternatives, useDeleteRate, useDeleteSupplier, useRates, useSupplier, useUpdateSupplier,
@@ -195,6 +196,7 @@ function Content({ supplierId }: { supplierId: string }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <SupplierDraftEmailButton supplierId={s.id} />
           {canUpdate ? <Button type="button" size="sm" variant="secondary" onClick={() => setEditOpen(true)}><EditIcon size={16} />Edit</Button> : null}
           {canUpdate ? (
             <ConfirmDialog trigger={<Button type="button" size="sm" variant="ghost" className="text-danger hover:text-danger">Delete</Button>}

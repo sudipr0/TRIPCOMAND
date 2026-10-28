@@ -1,0 +1,18 @@
+{
+  // Typecheck-only configuration for the Vitest suite.
+  //
+  // Tests are ESM (Vitest transpiles them), so they are compiled here with
+  // module: "ESNext" rather than the application's "NodeNext". This config is
+  // never used to emit output (noEmit); it exists so `pnpm typecheck` still
+  // covers test files and would catch a genuine type error in them.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": ["src/**/*"]
+}

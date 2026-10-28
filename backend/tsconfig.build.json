@@ -1,0 +1,10 @@
+{
+  // Production build. Compiles application code only.
+  //
+  // Test files are excluded because Vitest loads them as ES modules while this
+  // project compiles to CommonJS (module: "NodeNext"). Including them made
+  // `tsc` reject top-level `await` in two AI test files and, because the build
+  // script ran before tests in CI, took the whole pipeline down.
+  "extends": "./tsconfig.json",
+  "exclude": ["src/**/__tests__/**", "src/**/*.test.ts"]
+}

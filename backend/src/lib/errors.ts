@@ -74,4 +74,20 @@ export class AppError extends Error {
   ): AppError {
     return new AppError(403, ERROR_CODES.MEMBERSHIP_REQUIRED, message, details);
   }
+  /** AI drafting is switched off (no key configured). 503: retry will not help. */
+  static aiNotConfigured(
+    message = "AI drafting is not configured for this deployment",
+  ): AppError {
+    return new AppError(503, ERROR_CODES.AI_NOT_CONFIGURED, message);
+  }
+  /** AI provider failed in a way the caller may retry (429, timeout, 5xx). */
+  static aiUnavailable(
+    message = "AI drafting is temporarily unavailable",
+    details?: unknown,
+  ): AppError {
+    return new AppError(503, ERROR_CODES.AI_UNAVAILABLE, message, details);
+  }
+  static tooManyRequests(message = "Too many requests", details?: unknown): AppError {
+    return new AppError(429, ERROR_CODES.TOO_MANY_REQUESTS, message, details);
+  }
 }
