@@ -36,6 +36,7 @@ export {
   Printer as PrintIcon,
   CalendarBlank as CalendarBlankIcon,
   CurrencyCircleDollar as MoneyIcon,
+  ChartLineUp as ChartIcon,
   CheckCircle as SuccessIcon,
   WarningCircle as WarningIcon,
   XCircle as ErrorIcon,

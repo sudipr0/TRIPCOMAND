@@ -8,8 +8,14 @@ import { prisma } from "../../lib/prisma.js";
  * a cancelled reservation is not a cost the agency carried. Staff assignments
  * exclude DECLINED and CANCELLED for the same reason.
  */
-export const CANCELLED_SUPPLIER_BOOKING_STATUSES = ["CANCELLED", "NO_SHOW"] as const;
-export const EXCLUDED_STAFF_ASSIGNMENT_STATUSES = ["DECLINED", "CANCELLED"] as const;
+export const CANCELLED_SUPPLIER_BOOKING_STATUSES = [
+  "CANCELLED",
+  "NO_SHOW",
+] as const;
+export const EXCLUDED_STAFF_ASSIGNMENT_STATUSES = [
+  "DECLINED",
+  "CANCELLED",
+] as const;
 
 const SUPPLIER_BOOKING_SELECT = {
   estimatedCost: true,

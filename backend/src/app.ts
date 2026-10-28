@@ -33,6 +33,8 @@ import { fieldRoutes } from './modules/field/field.routes.js';
 import { disruptionRoutes } from './modules/disruption/disruption.routes.js';
 import { financeRoutes } from './modules/finance/finance.routes.js';
 import { portalRoutes, portalAdminRoutes } from './modules/portal/index.js';
+import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
+import { documentRoutes } from './modules/documents/document.routes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -111,6 +113,10 @@ export async function buildApp() {
   // Phase 10 — client portal. Public token routes and office admin routes are separate plugins.
   await app.register(portalRoutes, { prefix: '/api/v1/portal' });
   await app.register(portalAdminRoutes, { prefix: '/api/v1/workspaces' });
+
+  // Phase 11 — business intelligence and secure local document storage.
+  await app.register(analyticsRoutes, { prefix: '/api/v1/workspaces' });
+  await app.register(documentRoutes, { prefix: '/api/v1/workspaces' });
 
   return app;
 }

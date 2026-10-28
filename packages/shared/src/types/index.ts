@@ -1309,3 +1309,186 @@ export interface PortalTravelerDocuments {
   portalAccess: PortalAccessState | null;
   documents: TripDocumentDetail[];
 }
+
+// ─────────────────────────────
+// Phase 11 — Business intelligence
+// ─────────────────────────────
+
+/**
+ * Analytics figures are derived on read from the same records Finance already
+ * consumes. Every response carries `currency` for *that* currency bucket only —
+ * figures in different currencies are never added together.
+ */
+export type AnalyticsAvailability = 'AVAILABLE' | 'UNAVAILABLE' | 'PARTIAL';
+
+export interface AnalyticsPeriod {
+  /** Inclusive UTC start of the period. */
+  from: string;
+  /** Exclusive UTC end of the period. */
+  to: string;
+  /** Calendar year the period was derived from. */
+  year: number;
+}
+
+export interface DashboardKpis {
+  year: number;
+  period: AnalyticsPeriod;
+  /** Currency the figures belong to (workspace's dominant currency). */
+  currency: string;
+  /** Other currencies that hold money in this period but are not included in the totals. */
+  excludedCurrencies: string[];
+  revenueYtd: {
+    value: number | null;
+    availability: AnalyticsAvailability;
+    /** Refund payments already netted off `value`. */
+    refunds: number;
+    definition: string;
+  };
+  profitMargin: {
+    value: number | null;
+    currency: string;
+    /** (revenue - actual costs) / revenue * 100, null when revenue is zero. */
+    availability: AnalyticsAvailability;
+    revenue: number;
+    actualCosts: number;
+    definition: string;
+  };
+  totalTrips: {
+    value: number;
+    /** Trips whose startDate falls inside the period. */
+    definition: string;
+  };
+  activeDisruptions: {
+    value: number;
+    /** Disruptions in a non-terminal status linked to trips that are not cancelled. */
+    definition: string;
+  };
+  /** Reliability of the figures themselves, not of the trips. */
+  dataQuality: {
+    tripsWithRevenue: number;
+    tripsWithAnyCost: number;
+    tripsWithRevenueButNoCost: number;
+    note: string;
+  };
+}
+
+export type SupplierReliabilityBasis =
+  | 'INSUFFICIENT_DATA'
+  | 'NO_DISRUPTIONS'
+  | 'HAS_DISRUPTIONS';
+
+export interface SupplierReliabilityRow {
+  supplierId: string;
+  supplierName: string;
+  category: string;
+  status: string;
+  currency: string;
+  /** Supplier bookings counted in the denominator (cancelled/no-show excluded). */
+  totalBookings: number;
+  completedBookings: number;
+  cancelledBookings: number;
+  /** Bookings whose service date fell inside the reporting window. */
+  bookingsInWindow: number;
+  /** Disruptions in the window attributed to this supplier. */
+  attributedDisruptions: number;
+  attributedHighSeverity: number;
+  /** Distinct trips affected by attributed disruptions. */
+  affectedTrips: number;
+  serviceValue: number;
+  /** null when there is not enough evidence — never an artificial 100. */
+  reliabilityPercent: number | null;
+  basis: SupplierReliabilityBasis;
+  explanation: string;
+}
+
+export interface SupplierReliabilityReport {
+  period: AnalyticsPeriod;
+  currency: string;
+  excludedCurrencies: string[];
+  /** Numerator/denominator and time window, stated once for the whole table. */
+  methodology: {
+    window: string;
+    denominator: string;
+    numerator: string;
+    formula: string;
+    minimumBookings: number;
+    attribution: string;
+  };
+  suppliers: SupplierReliabilityRow[];
+}
+
+export interface OperationalAnalytics {
+  period: AnalyticsPeriod;
+  disruptions: {
+    totalInWindow: number;
+    active: number;
+    resolved: number;
+    closed: number;
+    byCategory: { category: string; count: number }[];
+    bySeverity: { severity: string; count: number }[];
+  };
+  affectedTrips: {
+    /** Trips with at least one disruption reported in the window. */
+    count: number;
+    /** Trips with at least one unresolved disruption, regardless of report date. */
+    currentlyAffected: number;
+  };
+  recovery: {
+    /** Only approved / in-progress / completed plans carry a recorded amount. */
+    recordedCost: number;
+    currency: string;
+    plansWithCost: number;
+    /** Mean time from disruption report to resolution, in hours, for resolved ones. */
+    averageResolutionHours: number | null;
+    resolvedCount: number;
+    /** Tasks completed vs created inside the window. */
+    tasksCompleted: number;
+    tasksTotal: number;
+  };
+}
+
+export interface TripProfitabilityReportRow {
+  tripId: string;
+  tripNumber: string;
+  name: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  currency: string;
+  revenue: number;
+  actualCost: number;
+  profit: number;
+  marginPercent: number | null;
+  /** false when the trip has revenue but no recorded cost, or vice versa. */
+  complete: boolean;
+  completenessNote: string | null;
+}
+
+export interface TripProfitabilityReport {
+  period: AnalyticsPeriod;
+  currency: string;
+  excludedCurrencies: string[];
+  totals: {
+    revenue: number;
+    actualCost: number;
+    profit: number;
+    marginPercent: number | null;
+    trips: number;
+    incompleteTrips: number;
+  };
+  rows: TripProfitabilityReportRow[];
+}
+
+/** Metadata for a file stored by the local document adapter. */
+export interface StoredDocumentMetadata {
+  id: string;
+  travelerId: string;
+  tripId: string;
+  documentType: string;
+  fileName: string;
+  sizeBytes: number;
+  contentType: string;
+  uploadedByTraveler: boolean;
+  createdAt: string;
+  downloadUrl: string;
+}

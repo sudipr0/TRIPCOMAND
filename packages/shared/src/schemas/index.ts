@@ -1739,3 +1739,79 @@ export type PortalAcknowledgeUpdateInput = z.infer<typeof portalAcknowledgeUpdat
 export type PortalTokenParams = z.infer<typeof portalTokenParamsSchema>;
 export type CreateTripDocumentSchemaInput = z.infer<typeof createTripDocumentSchema>;
 export type TravelerUploadDocumentInput = z.infer<typeof travelerUploadDocumentSchema>;
+
+// ─────────────────────────────
+// Phase 11 — Business intelligence (query contracts)
+// ─────────────────────────────
+
+const queryBoolean = z.preprocess(
+  (value) => (typeof value === 'string' ? value.toLowerCase() === 'true' : value),
+  z.boolean(),
+);
+
+/** First and last year a workspace can report on. Guards against absurd ranges. */
+export const ANALYTICS_MIN_YEAR = 2000;
+export const ANALYTICS_MAX_YEAR = 2100;
+
+export const analyticsPeriodQuerySchema = z.object({
+  /** Calendar year in UTC. Defaults to the current year at the service boundary. */
+  year: z.coerce
+    .number()
+    .int()
+    .min(ANALYTICS_MIN_YEAR)
+    .max(ANALYTICS_MAX_YEAR)
+    .optional(),
+});
+
+export const tripProfitabilityQuerySchema = analyticsPeriodQuerySchema.extend({
+  status: z
+    .enum(['PLANNING', 'READY', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])
+    .optional(),
+  sort: z
+    .enum(['margin', 'revenue', 'cost', 'profit', 'startDate'])
+    .default('margin'),
+  direction: z.enum(['asc', 'desc']).default('desc'),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+export const supplierReliabilityQuerySchema = analyticsPeriodQuerySchema.extend({
+  minBookings: z.coerce.number().int().min(0).max(100).default(1),
+});
+
+export const analyticsExportQuerySchema = z.object({
+  /** Which report to export. Anything else is rejected. */
+  report: z.enum([
+    'trip-profitability',
+    'supplier-reliability',
+    'dashboard-kpis',
+    'operational',
+  ]),
+  year: z.coerce
+    .number()
+    .int()
+    .min(ANALYTICS_MIN_YEAR)
+    .max(ANALYTICS_MAX_YEAR)
+    .optional(),
+  status: z
+    .enum(['PLANNING', 'READY', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])
+    .optional(),
+  minBookings: z.coerce.number().int().min(0).max(100).default(1),
+  /** Present so the same filters the screen used can be replayed. */
+  includeIncomplete: queryBoolean.optional(),
+});
+
+/** Multipart document upload. The file itself is size-checked by the adapter. */
+export const MAX_DOCUMENT_SIZE_BYTES = 5 * 1024 * 1024;
+export const ALLOWED_DOCUMENT_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png'] as const;
+
+export const documentUploadFieldsSchema = z.object({
+  travelerId: z.string().uuid(),
+  documentType: documentTypeSchema,
+});
+
+export type AnalyticsPeriodQuery = z.infer<typeof analyticsPeriodQuerySchema>;
+export type TripProfitabilityQuery = z.infer<typeof tripProfitabilityQuerySchema>;
+export type SupplierReliabilityQuery = z.infer<typeof supplierReliabilityQuerySchema>;
+export type AnalyticsExportQuery = z.infer<typeof analyticsExportQuerySchema>;
+export type DocumentUploadFields = z.infer<typeof documentUploadFieldsSchema>;

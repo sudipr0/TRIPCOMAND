@@ -20,6 +20,7 @@ import {
   CalendarIcon,
   WarningIcon,
   MoneyIcon,
+  ChartIcon,
 } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -40,7 +41,7 @@ interface NavItem {
 
 const navGroups: { label: string; items: NavItem[] }[] = [
   { label: 'Operations', items: [{ label: 'Dashboard', path: '/dashboard', icon: DashboardIcon }, { label: 'Trips', path: '/trips', icon: TripIcon }, { label: 'Disruptions', path: '/disruptions', icon: WarningIcon }, { label: 'Itinerary', path: '/trips', icon: TripIcon }] },
-  { label: 'Commercial', items: [{ label: 'Customers', path: '/customers', icon: CustomerIcon }, { label: 'Inquiries', path: '/inquiries', icon: InquiryIcon }, { label: 'Quotations', path: '/quotations', icon: QuotationIcon }, { label: 'Bookings', path: '/bookings', icon: BookingIcon }, { label: 'Finance', path: '/finance', icon: MoneyIcon }] },
+  { label: 'Commercial', items: [{ label: 'Customers', path: '/customers', icon: CustomerIcon }, { label: 'Inquiries', path: '/inquiries', icon: InquiryIcon }, { label: 'Quotations', path: '/quotations', icon: QuotationIcon }, { label: 'Bookings', path: '/bookings', icon: BookingIcon }, { label: 'Finance', path: '/finance', icon: MoneyIcon }, { label: 'Analytics', path: '/analytics', icon: ChartIcon }] },
   { label: 'Catalog', items: [{ label: 'Destinations', path: '/destinations', icon: DestinationIcon }, { label: 'Trek Templates', path: '/trek-templates', icon: TemplateIcon }] },
   { label: 'Resources', items: [{ label: 'Staff', path: '/staff', icon: StaffIcon }, { label: 'Resources', path: '/resources', icon: TruckIcon }, { label: 'Availability', path: '/availability', icon: CalendarIcon }, { label: 'Suppliers', path: '/suppliers', icon: SupplierIcon }] },
   { label: 'Settings', items: [{ label: 'Settings', path: '/settings', icon: SettingsIcon }] },
@@ -56,6 +57,7 @@ const pageTitles: Record<string, string> = {
   '/quotations': 'Quotations',
   '/bookings': 'Bookings',
   '/finance': 'Finance',
+  '/analytics': 'Analytics',
   '/trips': 'Trips',
   '/disruptions': 'Disruptions',
   '/resources': 'Resources',

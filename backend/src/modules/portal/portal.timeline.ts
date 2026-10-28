@@ -38,7 +38,10 @@ export function currentDayNumber(
 }
 
 /** Days until departure (1 = tomorrow); null once the trip has started. */
-export function daysUntilStart(startDate: Date, now: Date = new Date()): number | null {
+export function daysUntilStart(
+  startDate: Date,
+  now: Date = new Date(),
+): number | null {
   const offset = calendarDayIndex(now, startDate);
   return offset > 0 ? offset : null;
 }
@@ -52,13 +55,16 @@ export function daysUntilStart(startDate: Date, now: Date = new Date()): number 
  * Deliberately status-driven rather than date-driven: the office can mark a day
  * in progress early or hold a day pending, and the portal must agree with them.
  */
-export function nextRelevantDay<T extends { dayNumber: number; status: string }>(
-  days: T[],
-): T | null {
+export function nextRelevantDay<
+  T extends { dayNumber: number; status: string },
+>(days: T[]): T | null {
   const ordered = [...days].sort((a, b) => a.dayNumber - b.dayNumber);
-  const live = ordered.find((day) =>
-    day.status === 'IN_PROGRESS' || day.status === 'DELAYED' || day.status === 'PROBLEM',
+  const live = ordered.find(
+    (day) =>
+      day.status === "IN_PROGRESS" ||
+      day.status === "DELAYED" ||
+      day.status === "PROBLEM",
   );
   if (live) return live;
-  return ordered.find((day) => day.status === 'PENDING') ?? null;
+  return ordered.find((day) => day.status === "PENDING") ?? null;
 }

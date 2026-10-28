@@ -24,6 +24,7 @@ import { SuppliersPage, SupplierDetailPage } from '@/features/suppliers/pages';
 import { FieldHomePage, FieldTripPage } from '@/features/field/pages';
 import { DisruptionsPage, DisruptionDetailPage } from '@/features/disruptions/pages';
 import { FinanceDashboardPage } from '@/features/finance/pages';
+import { AnalyticsPage } from '@/features/analytics/pages';
 import { PortalPage } from '@/features/portal/pages';
 
 
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
       { path: '/bookings', element: <BookingsPage /> },
       { path: '/bookings/:bookingId', element: <BookingDetailPage /> },
       { path: '/finance', element: <FinanceDashboardPage /> },
+      { path: '/analytics', element: <AnalyticsPage /> },
       { path: '/trips', element: <TripsPage /> },
       { path: '/trips/:tripId', element: <TripDetailPage /> },
       { path: '/disruptions', element: <DisruptionsPage /> },
