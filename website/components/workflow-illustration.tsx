@@ -28,7 +28,7 @@ const steps = [
     stage: "Executing",
     label: "Work in progress",
     detail: "Replacement confirmed, 2 tasks open",
-    tone: "forest",
+    tone: "active",
   },
   {
     stage: "Resolved",
@@ -40,7 +40,7 @@ const steps = [
 
 const tones = {
   amber: "border-amber-line bg-amber-soft text-amber",
-  forest: "border-sage-line bg-sage text-forest",
+  active: "border-mint-line bg-mint text-teal-ink",
   neutral: "border-line bg-surface-sunken text-ink-muted",
 };
 

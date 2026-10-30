@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+
 import { routes, siteUrl } from "@/lib/site-config";
 
 /**
@@ -44,6 +45,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    // Legal pages are indexable but low priority; they answer search queries
+    // about what the site does with data.
+    {
+      url: `${siteUrl}${routes.privacy}`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteUrl}${routes.terms}`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
   ];
 }

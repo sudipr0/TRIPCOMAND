@@ -10,7 +10,7 @@ type PilotCtaProps = {
   title?: ReactNode;
   description?: ReactNode;
   /** Heading level, so each page keeps a sensible outline. */
-  as?: "h2" | "h3";
+  headingId?: string;
   className?: string;
 };
 
@@ -21,45 +21,46 @@ type PilotCtaProps = {
 export function PilotCta({
   title = pilot.headline,
   description = "Tell us how your agency coordinates a multi-day trip today. We reply to every enquiry, including the ones we cannot take on.",
-  as: Heading = "h2",
+  headingId = "pilot-cta-heading",
   className,
 }: PilotCtaProps) {
   return (
     <section
-      aria-labelledby="pilot-cta-heading"
-      className={cn("border-t border-line bg-surface", className)}
+      aria-labelledby={headingId}
+      className={cn("border-t border-line bg-canvas", className)}
     >
       <div className="container-page py-14 lg:py-20">
-        <div className="relative overflow-hidden rounded-xl border border-forest/15 bg-sage/70 px-5 py-10 sm:px-10 sm:py-12 lg:px-14">
+        <div className="relative overflow-hidden rounded-xl bg-navy px-5 py-10 text-on-navy sm:px-10 sm:py-12 lg:px-14">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full border border-forest/10"
+            className="bg-grid-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_120%_at_100%_0%,black,transparent)]"
           />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-12 -right-4 size-40 rounded-full border border-forest/10"
-          />
-          <div className="relative grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-10">
+          <div className="relative grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12">
             <div className="max-w-xl">
-              <Heading
-                id="pilot-cta-heading"
-                className="text-[1.625rem] leading-[1.15] font-semibold tracking-[-0.025em] text-forest-ink sm:text-[2rem]"
+              <h2
+                id={headingId}
+                className="font-display text-[1.625rem] leading-[1.15] font-bold tracking-[-0.028em] text-white sm:text-[2rem]"
               >
                 {title}
-              </Heading>
-              <p className="mt-3 text-[0.9375rem] leading-6 text-ink-muted sm:text-base">
+              </h2>
+              <p className="mt-3 text-[0.9375rem] leading-6 text-on-navy-muted sm:text-base">
                 {description}
               </p>
-              <p className="mt-3 text-sm font-medium text-forest-ink">
+              <p className="mt-3 text-sm font-medium text-teal-on-navy">
                 No credit card required. Just honest feedback.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row md:flex-col md:items-stretch">
-              <ButtonLink href={PILOT_CTA_HREF} size="lg" className="w-full sm:w-auto">
+              <ButtonLink
+                href={PILOT_CTA_HREF}
+                size="lg"
+                variant="inverse"
+                className="w-full sm:w-auto"
+              >
                 {PILOT_CTA_LABEL}
                 <ArrowRightIcon className="size-4" aria-hidden="true" />
               </ButtonLink>
-              <p className="text-center text-xs leading-5 text-ink-muted md:text-left">
+              <p className="text-center text-xs leading-5 text-on-navy-subtle md:text-left">
                 Three agencies · three months
                 <br className="hidden md:block" /> · free while in development
               </p>

@@ -5,20 +5,27 @@ import { cn } from "@/lib/cn";
 type Variant = "primary" | "secondary" | "ghost" | "inverse";
 type Size = "sm" | "md" | "lg";
 
+// Focus is handled by the shared `.focus-ring` utility (app/globals.css) so a
+// button cannot drift from the rest of the site. It is a two-tone ring: a teal
+// outer ring plus a light inner ring, which stays visible on light surfaces, on
+// the navy bands and on teal buttons alike.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap " +
-  "transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2";
+  "focus-ring inline-flex items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap " +
+  // Only colour properties transition. `transition-colors` would also animate
+  // `outline-color`, delaying the focus ring for ~150ms after each Tab; that is
+  // the one thing a keyboard user needs immediately.
+  "transition-[background-color,border-color,color,box-shadow] duration-150 " +
+  "disabled:cursor-not-allowed disabled:opacity-60";
 
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-forest text-white shadow-[0_1px_2px_rgb(15_47_35/0.24)] hover:bg-forest-hover focus-visible:outline-forest",
-  secondary:
-    "border border-line-strong bg-surface text-ink hover:border-sage-line hover:bg-sage focus-visible:outline-forest",
-  ghost:
-    "text-ink-muted hover:bg-sage hover:text-forest-ink focus-visible:outline-forest",
-  inverse: "bg-surface text-forest-ink hover:bg-sage focus-visible:outline-white",
+  // teal-strong carries white text at 4.72:1; the raw brand teal (3.00:1) is
+  // never used as a button background with white text.
+  primary: "bg-teal-strong text-white shadow-[0_1px_2px_rgb(15_30_51/0.18)] hover:bg-teal-hover",
+  secondary: "border border-line-strong bg-surface text-navy hover:border-teal/50 hover:bg-mint/60",
+  ghost: "text-ink-muted hover:bg-mint/70 hover:text-navy",
+  inverse: "bg-surface text-navy hover:bg-mint",
 };
+
 
 const sizes: Record<Size, string> = {
   // 36px tall is only used in the header bar on desktop, where it pairs with

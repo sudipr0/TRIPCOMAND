@@ -159,10 +159,10 @@ export function TrailMark({
     <svg viewBox="0 0 32 32" className={className} aria-hidden="true" focusable="false">
       {filled ? (
         <>
-          <rect width="32" height="32" rx="8" className="fill-forest" />
-          <path d="M4.6 25 12.4 9.6l3.4 6.6 2.7-4.4L27.4 25Z" className="fill-canvas" />
-          <path d="M14.2 25 19 16.4 23.4 25Z" className="fill-sage-line" />
-          <path d="M20.4 8.4v-3l3.6 1.5-3.6 1.5Z" className="fill-[#8FB39C]" />
+          <rect width="32" height="32" rx="8" className="fill-navy" />
+          <path d="M4.6 25 12.4 9.6l3.4 6.6 2.7-4.4L27.4 25Z" className="fill-white" />
+          <path d="M14.2 25 19 16.4 23.4 25Z" className="fill-[#16A6A0]" />
+          <path d="M20.4 8.4v-3l3.6 1.5-3.6 1.5Z" className="fill-[#8FD9D4]" />
         </>
       ) : (
         <>

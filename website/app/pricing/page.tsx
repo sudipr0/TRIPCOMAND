@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { pilot } from "@/lib/content";
+import { pilot, pilotStatus } from "@/lib/content";
 import { PilotCta } from "@/components/pilot-cta";
 import { pageMetadata } from "@/lib/page-metadata";
 import { ButtonLink } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export default function PricingPage() {
 
               <dl className="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded-card border border-line bg-line">
                 {[
-                  { label: "Cost", value: "£0" },
+                  { label: "Cost", value: "No fee" },
                   { label: "Duration", value: "3 months" },
                   { label: "Agencies", value: "3" },
                 ].map((item) => (
@@ -41,7 +41,7 @@ export default function PricingPage() {
                     <dt className="text-[0.6875rem] font-semibold tracking-[0.08em] text-ink-subtle uppercase">
                       {item.label}
                     </dt>
-                    <dd className="mt-1 text-lg font-semibold text-forest-ink">
+                    <dd className="mt-1 text-lg font-semibold text-navy">
                       {item.value}
                     </dd>
                   </div>
@@ -56,22 +56,26 @@ export default function PricingPage() {
             </div>
 
             {/* Pilot offer card */}
-            <div className="rounded-xl border border-forest/20 bg-surface p-6 shadow-card sm:p-8">
+            <div className="rounded-xl border border-teal-strong/25 bg-surface p-6 shadow-card sm:p-8">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="inline-flex items-center gap-2 rounded-full border border-sage-line bg-sage px-3 py-1 text-xs font-medium text-forest-ink">
-                  <span className="size-1.5 rounded-full bg-forest" aria-hidden="true" />
-                  Development pilot
+                <p className="inline-flex items-center gap-2 rounded-full border border-mint-line bg-mint px-3 py-1 text-xs font-medium text-navy">
+                  <span className="size-1.5 rounded-full bg-teal-strong" aria-hidden="true" />
+                  Proposed pilot offer
                 </p>
                 <p className="text-sm text-ink-muted">No credit card required</p>
               </div>
 
               {/* The approved offer sentence, rendered verbatim from lib/content.ts. */}
-              <h2 className="mt-5 text-[1.375rem] leading-[1.25] font-semibold tracking-[-0.02em] text-ink sm:text-2xl">
+              <h2 className="mt-5 font-display text-[1.375rem] leading-[1.25] font-bold tracking-[-0.025em] text-navy sm:text-2xl">
                 {pilot.headline}
               </h2>
               <p className="mt-2 text-[0.9375rem] leading-6 text-ink-muted">
-                For three trekking agencies who will use TrailComand on real departures
+                For a few trekking agencies who would use TrailComand on real departures
                 and tell us plainly what works and what does not.
+              </p>
+              <p className="mt-3 rounded-lg border border-line bg-canvas px-3 py-2 text-xs leading-5 text-ink-muted">
+                <span className="font-semibold text-navy">Status: </span>
+                {pilotStatus.label}. {pilotStatus.body}
               </p>
 
               <h3 className="mt-6 text-xs font-semibold tracking-[0.08em] text-ink-subtle uppercase">
@@ -81,7 +85,7 @@ export default function PricingPage() {
                 {pilot.included.map((item) => (
                   <li key={item} className="flex gap-2.5">
                     <CheckIcon
-                      className="mt-0.5 size-4 shrink-0 text-forest"
+                      className="mt-0.5 size-4 shrink-0 text-teal-ink"
                       aria-hidden="true"
                     />
                     <span className="text-[0.9375rem] leading-6 text-ink">{item}</span>
@@ -134,7 +138,7 @@ export default function PricingPage() {
           <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
             {pilot.conversation.map((step) => (
               <li key={step.step} className="border-t border-line-strong pt-4">
-                <span className="font-mono text-xs text-forest">{step.step}</span>
+                <span className="font-mono text-xs text-teal-ink">{step.step}</span>
                 <h3 className="mt-2 text-[1.0625rem] font-semibold text-ink">
                   {step.title}
                 </h3>
@@ -157,7 +161,7 @@ export default function PricingPage() {
               title="Pricing, once it is real."
             />
             <div className="max-w-xl space-y-4">
-              <p className="rounded-card border border-line bg-surface p-5 text-[1.0625rem] leading-7 font-medium text-forest-ink">
+              <p className="rounded-card border border-line bg-surface p-5 text-[1.0625rem] leading-7 font-medium text-navy">
                 {pilot.pricingNote}
               </p>
               <p className="text-[0.9375rem] leading-6 text-ink-muted">
@@ -219,14 +223,14 @@ export default function PricingPage() {
             More product questions are answered in the{" "}
             <Link
               href={routes.home}
-              className="font-medium text-forest underline decoration-sage-line underline-offset-2 hover:decoration-forest"
+              className="font-medium text-teal-ink underline decoration-mint-line underline-offset-2 hover:decoration-teal-ink"
             >
               homepage FAQ
             </Link>
             ; capability details are on{" "}
             <Link
               href={routes.features}
-              className="font-medium text-forest underline decoration-sage-line underline-offset-2 hover:decoration-forest"
+              className="font-medium text-teal-ink underline decoration-mint-line underline-offset-2 hover:decoration-teal-ink"
             >
               Features
             </Link>

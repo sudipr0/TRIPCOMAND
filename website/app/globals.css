@@ -2,44 +2,63 @@
 
 /* ---------------------------------------------------------------------------
    TrailComand marketing design tokens
-   Warm off-white canvas, deep forest green accent, charcoal text, sage + amber.
-   Contrast is checked against WCAG AA for body and UI text.
+
+   Midnight Navy + Alpine Teal, on cool light neutrals. Every text/background
+   pair used in the site is checked against WCAG AA (4.5:1) for normal text;
+   the measured ratios are quoted next to the token they apply to.
+
+   The accent that carries white text is `--color-teal-strong` (#0F817B,
+   4.72:1 with white) — the raw brand teal (#16A6A0) is 3.00:1 on white, so it
+   is only used as a non-text accent (dots, rules, focus rings, illustration)
+   and always paired with a text label, never as the only signal.
 --------------------------------------------------------------------------- */
 @theme {
-  --color-canvas: #faf9f6;
+  --color-canvas: #f6f8fa;
   --color-surface: #ffffff;
-  --color-surface-sunken: #f4f3ef;
+  --color-surface-sunken: #eef3f6;
 
-  --color-ink: #202923;
-  --color-ink-muted: #5c6660; /* 5.19:1 on sage, 5.96:1 on white */
-  /* Tertiary text stays >= 4.5:1 on every surface we use it on (worst case
-     #eaf1eb sage at 4.52:1), so it is AA for small text, not just large. */
-  --color-ink-subtle: #666f69;
+  --color-ink: #0f1e33; /* 16.75:1 on white, 15.73:1 on canvas */
+  --color-ink-muted: #4b5b70; /* 6.93:1 on white, 6.20:1 on surface-sunken */
+  --color-ink-subtle: #5a6b80; /* 5.46:1 on white, 4.88:1 on surface-sunken */
 
-  --color-forest: #1f5a43;
-  --color-forest-hover: #174633;
-  --color-forest-ink: #0f2f23;
+  /* Midnight Navy — dark surfaces (hero band, footer, product panel). */
+  --color-navy: #14243a;
+  --color-navy-deep: #0e1a2a;
+  --color-navy-raised: #1d3049;
+  --color-navy-line: #2b3f58;
+  --color-on-navy: #ffffff; /* 15.63:1 */
+  --color-on-navy-muted: #d7e2ea; /* 11.88:1 */
+  --color-on-navy-subtle: #a8bcd0; /* 8.02:1 */
+  --color-teal-on-navy: #4fd1c8; /* accent on dark, decorative */
 
-  --color-sage: #eaf1eb;
-  --color-sage-strong: #d6e4da;
-  --color-sage-line: #c3d5c9;
+  /* Alpine Teal. */
+  --color-teal: #16a6a0; /* accent / non-text only on light surfaces */
+  --color-teal-strong: #0f817b; /* button background with white text, 4.72:1 */
+  --color-teal-hover: #0b6f6a; /* 6.01:1 with white */
+  --color-teal-ink: #0b6f6a; /* links and accent text on light, 5.64:1 */
+  --color-mint: #e4f3f1;
+  --color-mint-line: #bfe2de;
 
-  --color-line: #e5e7e2;
-  --color-line-strong: #d3d8d2;
+  --color-line: #dfe6ec;
+  --color-line-strong: #c8d4de;
 
-  --color-amber: #8a5a10;
-  --color-amber-soft: #fbf3e4;
+  /* Focus indicator pair — see the :focus-visible rule below for the ratios. */
+  --color-focus-ring: #16a6a0;
+  --color-focus-halo: #ffffff;
+
+  --color-amber: #7a4a08; /* 6.84:1 on amber-soft */
+  --color-amber-soft: #fdf4e3;
   --color-amber-line: #ecd9b4;
 
-  --color-danger: #a3342c;
-  --color-danger-soft: #fbf0ee;
+  --color-danger: #a3342c; /* 6.11:1 on danger-soft */
+  --color-danger-soft: #fcf0ee;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --shadow-card: 0 1px 2px rgb(32 41 35 / 0.04), 0 8px 24px -16px rgb(32 41 35 / 0.18);
-  --shadow-raised: 0 1px 2px rgb(32 41 35 / 0.05), 0 24px 48px -32px rgb(32 41 35 / 0.28);
-  --shadow-header: 0 1px 0 rgb(32 41 35 / 0.06);
+  --shadow-card: 0 1px 2px rgb(15 30 51 / 0.04), 0 10px 28px -18px rgb(15 30 51 / 0.22);
+  --shadow-raised: 0 1px 2px rgb(15 30 51 / 0.06), 0 28px 60px -36px rgb(15 30 51 / 0.4);
 
   --radius-card: 0.75rem;
   --radius-lg: 0.625rem;
@@ -66,27 +85,47 @@
     text-rendering: optimizeLegibility;
   }
 
-  ::selection {
-    background-color: var(--color-sage-strong);
-    color: var(--color-forest-ink);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--color-forest);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-
   h1,
   h2,
   h3,
   h4 {
+    font-family: var(--font-display);
     text-wrap: balance;
-    letter-spacing: -0.021em;
+    letter-spacing: -0.022em;
   }
 
   p {
     text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-mint);
+    color: var(--color-navy);
+  }
+
+  /*
+   * Focus indicator — one system for the whole site.
+   *
+   * A teal outer ring alone is not enough: #0B6F6A on the navy bands is only
+   * 1.77:1, so a teal-only ring effectively disappears on the hero and footer.
+   * The ring is therefore two-tone — a teal band (#16A6A0, 6.56:1 on navy,
+   * 2.86:1 on white) wrapped by a light band (#FFFFFF, 15.63:1 on navy) that
+   * separates it from dark backgrounds. At least one band always clears the
+   * 3:1 non-text contrast minimum (WCAG 1.4.11), and the light band also
+   * guarantees the indicator remains visible on teal buttons.
+   */
+  /*
+   * `!important` is deliberate. Tailwind's `hover:bg-*` also emits a
+   * `box-shadow` (its ring variable), and utilities outrank this base rule in
+   * Tailwind v4's cascade order — so without it the halo silently drops on
+   * hovered links. Marked important, the indicator is never overridden by a
+   * component utility; that is the point of a global focus rule.
+   */
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 2px var(--color-focus-halo) !important;
+    border-radius: 2px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -138,10 +177,23 @@
     }
   }
 
-  /* Subtle dot grid used behind the hero only. */
-  .bg-grid {
-    background-image: radial-gradient(oklch(0.72 0.014 150 / 0.5) 1px, transparent 1px);
-    background-size: 22px 22px;
+  /*
+   * Shared focus ring for components. Mirrors the global :focus-visible rule so
+   * an element that sets its own `outline` still gets the paired halo, and so
+   * call sites have one class to use instead of inventing a colour each time.
+   */
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--color-focus-halo);
+  }
+
+
+
+  /* Faint dot grid, used behind the hero band only. */
+  .bg-grid-dark {
+    background-image: radial-gradient(rgb(255 255 255 / 0.09) 1px, transparent 1px);
+    background-size: 26px 26px;
   }
 
   .animate-rise {
@@ -161,5 +213,31 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/*
+ * Focus visibility guard — must live in the utilities layer.
+ *
+ * Tailwind's `transition-colors` includes `outline-color`, so any element using
+ * it (the nav links, buttons, form fields) fades its focus ring in over 150ms
+ * after each Tab. The ring is then briefly invisible at exactly the moment a
+ * keyboard user needs to see it. This block is deliberately emitted after
+ * Tailwind's utilities so it wins the cascade, and it removes only the
+ * transition — the ring itself is untouched (WCAG 2.4.7).
+ *
+ * It sits outside @layer components because a components-layer rule always
+ * loses to a utilities-layer rule regardless of source order.
+ */
+@layer utilities {
+  .focus-ring,
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    transition-property: none;
   }
 }

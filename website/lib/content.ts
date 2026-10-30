@@ -34,13 +34,24 @@ export type Capability = {
 /* Product facts shared by several pages                                      */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * PILOT STATUS — the single place to change when the pilot's availability
+ * changes. The site currently has no confirmed pilot agency and no configured
+ * delivery channel for enquiries, so the honest state is "applications open,
+ * nothing scheduled". Do not upgrade this wording without evidence.
+ */
+export const pilotStatus = {
+  label: "Not yet started",
+  body: "No pilot agencies are running yet. Enquiries are read and replied to, but a pilot only begins once a fit is agreed in writing.",
+} as const;
+
 export const productStage = {
   headline: "TrailComand is in development",
   body: "We are building TrailComand now and onboarding a small number of trekking agencies to use it with real trips. It is not a finished public product, and this site does not claim customers, integrations, or results it does not have yet.",
 };
 
 export const pilot = {
-  headline: "We are onboarding 3 trekking agencies for a free 3-month pilot.",
+  headline: "We are planning a free 3-month pilot with 3 trekking agencies.",
   supporting: "No credit card required. Just honest feedback.",
   places: 3,
   durationMonths: 3,
@@ -194,19 +205,29 @@ export const faqs = [
       "Keeping a reliable record of what changed on a trip, working out which parts of the trip are affected, coordinating the recovery with owners and deadlines, and giving travelers a clear place to see the latest itinerary.",
   },
   {
+    question: "Can we use it on live trips today?",
+    answer:
+      "Not yet, and we would rather say so plainly. The workflows exist in a development build, but no pilot agency has run a departure through it, the product has not been hardened for production, and there is no public sign-up. The pilot exists to find out what breaks before anyone relies on it on a real trip.",
+  },
+  {
     question: "Is TrailComand ready for production?",
     answer:
-      "No. TrailComand is in development. The core trip, itinerary and disruption workflows exist and are used with real trips during the pilot, but features are still changing and we are not presenting it as a finished, generally available product.",
+      "No. TrailComand is in development. The core trip, itinerary, disruption and recovery workflows exist in our development build, but they are still changing, have not yet been proven across pilot agencies' live trips, and we are not presenting the product as generally available.",
   },
   {
     question: "What does the pilot include?",
     answer:
-      "A free three-month pilot for three trekking agencies: working access to the workflows above, setup with your own trips, direct support from the team, and an honest review at the end. No credit card is required and we ask for feedback in return.",
+      "We are proposing a free three-month pilot for a small number of trekking agencies: working access to the workflows above, setup with your own trips, direct support from the team, and an honest review at the end. No credit card is required and we ask for feedback in return. Availability, scope and any terms are confirmed in writing before setup — nothing on this site is an entitlement.",
   },
   {
     question: "Does the platform automatically book suppliers or send messages?",
     answer:
       "No. TrailComand records and organizes; it does not contact suppliers, book replacements or send messages to travelers on its own. Anything you send, you review and send yourself. Automated sending is not built.",
+  },
+  {
+    question: "How is my information handled?",
+    answer:
+      "Whatever you type into the pilot form is used only to reply to your enquiry and discuss a pilot. This site runs no analytics or tracking scripts, sets no advertising cookies, and uses no CRM. If the form is delivered through a form service, that service processes the submission on our behalf. You can ask us to delete your enquiry at any time. See the Privacy page for the full detail.",
   },
   {
     question: "How can an agency request a pilot?",
@@ -300,7 +321,7 @@ export const capabilityStatusNotes: ReadonlyArray<{
   {
     status: "Available in development build",
     meaning:
-      "The workflow exists in our codebase and is exercised during the pilot. It is still changing, and TrailComand is not a generally available release.",
+      "The workflow exists in our codebase and is what the pilot is meant to test on live trips. It is still changing, and TrailComand is not a generally available release.",
   },
   {
     status: "In development",

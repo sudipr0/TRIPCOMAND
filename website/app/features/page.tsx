@@ -127,12 +127,12 @@ export default function FeaturesPage() {
                       {feature.what}
                     </dd>
                   </div>
-                  <div className="flex gap-2 rounded-lg bg-sage/60 p-3">
+                  <div className="flex gap-2 rounded-lg bg-mint/60 p-3">
                     <CheckIcon
                       aria-hidden="true"
-                      className="mt-0.5 size-4 shrink-0 text-forest"
+                      className="mt-0.5 size-4 shrink-0 text-teal-ink"
                     />
-                    <dd className="text-[0.875rem] leading-6 text-forest-ink">
+                    <dd className="text-[0.875rem] leading-6 text-navy">
                       {feature.benefit}
                     </dd>
                   </div>

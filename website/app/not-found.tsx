@@ -44,7 +44,7 @@ export default function NotFound() {
                 <li key={item.key}>
                   <Link
                     href={item.href}
-                    className="rounded text-sm text-forest underline decoration-sage-line underline-offset-4 hover:decoration-forest"
+                    className="rounded text-sm text-teal-ink underline decoration-mint-line underline-offset-4 hover:decoration-teal-ink"
                   >
                     {item.label}
                   </Link>

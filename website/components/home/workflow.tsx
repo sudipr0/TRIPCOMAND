@@ -11,12 +11,12 @@ export function Workflow() {
       {howItWorks.map((step) => (
         <li key={step.step} className="relative">
           <div className="flex items-center gap-3">
-            <span className="relative z-10 flex size-10 items-center justify-center rounded-full border border-sage-line bg-sage font-mono text-[0.8125rem] font-semibold text-forest">
+            <span className="relative z-10 flex size-10 items-center justify-center rounded-full border border-teal/30 bg-mint font-mono text-[0.8125rem] font-semibold text-teal-ink">
               {step.step}
             </span>
             <span className="h-px flex-1 bg-line md:hidden" aria-hidden="true" />
           </div>
-          <h3 className="mt-4 text-[1.0625rem] font-semibold text-ink">{step.title}</h3>
+          <h3 className="mt-4 font-display text-[1.0625rem] font-bold text-navy">{step.title}</h3>
           <p className="mt-2 text-[0.9375rem] leading-6 text-ink-muted">{step.body}</p>
           {step.note ? (
             <p className="mt-3 inline-flex items-start gap-1.5 text-[0.8125rem] leading-5 text-ink-subtle">

@@ -36,17 +36,18 @@ export function SectionHeading({
       className={cn("max-w-2xl", align === "center" && "mx-auto text-center", className)}
     >
       {eyebrow ? (
-        <p className="mb-3 text-xs font-semibold tracking-[0.1em] text-forest uppercase">
+        <p className="mb-3 inline-flex items-center gap-2 font-display text-xs font-bold tracking-[0.12em] text-teal-ink uppercase">
+          <span aria-hidden="true" className="h-px w-5 bg-teal" />
           {eyebrow}
         </p>
       ) : null}
       <Heading
         id={titleId}
         className={cn(
-          "text-ink",
+          "text-navy",
           Heading === "h1"
-            ? "text-[2.125rem] leading-[1.1] font-semibold tracking-[-0.03em] sm:text-5xl lg:text-[3.5rem]"
-            : "text-[1.75rem] leading-[1.15] font-semibold tracking-[-0.025em] sm:text-[2.125rem]",
+            ? "text-[2.125rem] leading-[1.08] font-extrabold tracking-[-0.032em] sm:text-5xl lg:text-[3.375rem]"
+            : "text-[1.75rem] leading-[1.15] font-bold tracking-[-0.028em] sm:text-[2.125rem]",
         )}
       >
         {title}

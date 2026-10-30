@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { cn } from "@/lib/cn";
 import { primaryNav, routes } from "@/lib/site-config";
 import { ButtonAnchor, ButtonLink } from "@/components/ui/button";
-import { CloseIcon, MenuIcon, TrailMark } from "@/components/ui/icons";
+import { ArrowRightIcon, CloseIcon, MenuIcon } from "@/components/ui/icons";
 import { loginUrl, PILOT_CTA_HREF, PILOT_CTA_LABEL } from "@/lib/site-config";
+import officialLogo from "@/docs/logoforweb.png";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -86,31 +88,33 @@ export function SiteHeader() {
     // No backdrop-filter here: a filtered ancestor becomes the containing block
     // for `position: fixed` descendants, which collapsed the mobile menu panel
     // to the header's height. An opaque canvas background is used instead.
-    <header className="sticky top-0 z-50 border-b border-line bg-canvas">
+    <header className="sticky top-0 z-50 border-b border-line bg-surface">
       <div className="container-page flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
         <Link
           href={routes.home}
           aria-label="TrailComand home"
-          className="group -mx-1 flex items-center gap-2.5 rounded-md px-1 py-1.5"
+          className="group -mx-1 flex items-center rounded-md px-1 py-1.5"
         >
-          <TrailMark className="size-8 text-forest transition-colors group-hover:text-forest-hover" />
-          <span className="text-[1.0625rem] font-semibold tracking-[-0.02em] text-forest-ink">
-            TrailComand
-          </span>
+          <Image
+            priority
+            src={officialLogo}
+            alt="TrailComand logo"
+            className="h-8 w-auto shrink-0 sm:h-9 lg:h-10"
+          />
         </Link>
 
         <nav aria-label="Primary" className="hidden lg:block">
-          <ul className="flex items-center gap-1">
+          <ul className="flex items-center gap-0.5">
             {primaryNav.map((item) => (
               <li key={item.key}>
                 <Link
                   href={item.href}
                   aria-current={isActive(item.href) ? "page" : undefined}
                   className={cn(
-                    "inline-flex h-9 items-center rounded-md px-3 text-[0.9375rem] transition-colors",
+                    "relative inline-flex h-9 items-center rounded-md px-3 text-[0.9375rem] transition-colors",
                     isActive(item.href)
-                      ? "font-medium text-forest-ink"
-                      : "text-ink-muted hover:bg-sage/70 hover:text-forest-ink",
+                      ? "font-semibold text-navy after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-teal"
+                      : "text-ink-muted hover:bg-surface-sunken hover:text-navy",
                   )}
                 >
                   {item.label}
@@ -120,15 +124,26 @@ export function SiteHeader() {
           </ul>
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <ButtonAnchor
-            size="sm"
-            href={loginUrl}
-            variant="ghost"
-            className="px-3 text-[0.9375rem] text-ink-muted"
-          >
-            Login
-          </ButtonAnchor>
+        <div className="hidden items-center gap-3 lg:flex">
+          {/* Login renders only when NEXT_PUBLIC_LOGIN_URL is configured. The
+              app is not deployed yet, so a permanent "Login" link would be a
+              dead end; the status chip tells visitors that honestly instead. */}
+          {loginUrl ? (
+            <ButtonAnchor
+              size="sm"
+              rel="noopener"
+              href={loginUrl}
+              variant="ghost"
+              className="px-3 text-[0.9375rem] text-ink-muted"
+            >
+              Login
+            </ButtonAnchor>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-sunken px-2.5 py-1 text-xs font-medium text-ink-muted">
+              <span className="size-1.5 rounded-full bg-teal" aria-hidden="true" />
+              App in development
+            </span>
+          )}
           <ButtonLink href={PILOT_CTA_HREF} size="sm" className="px-4">
             {PILOT_CTA_LABEL}
           </ButtonLink>
@@ -141,7 +156,7 @@ export function SiteHeader() {
           aria-controls={open ? panelId : undefined}
           onClick={() => setOpen((value) => !value)}
           aria-label={open ? "Close menu" : "Open menu"}
-          className="-mr-2 inline-flex size-11 items-center justify-center rounded-lg text-ink-muted hover:bg-sage hover:text-forest-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest lg:hidden"
+          className="-mr-2 inline-flex size-11 items-center justify-center rounded-lg text-ink-muted hover:bg-surface-sunken hover:text-navy focus-ring lg:hidden"
         >
           {open ? <CloseIcon className="size-6" /> : <MenuIcon className="size-6" />}
         </button>
@@ -154,7 +169,7 @@ export function SiteHeader() {
           ref={panelRef}
           aria-modal="true"
           aria-label="Site menu"
-          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain border-t border-line bg-canvas lg:hidden"
+          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain border-t border-line bg-surface lg:hidden"
         >
           <nav aria-label="Mobile" className="container-page pt-3 pb-8">
             <ul className="flex flex-col">
@@ -164,29 +179,41 @@ export function SiteHeader() {
                     href={item.href}
                     aria-current={isActive(item.href) ? "page" : undefined}
                     className={cn(
-                      "flex min-h-14 items-center justify-between text-lg",
-                      isActive(item.href) ? "font-medium text-forest-ink" : "text-ink",
+                      "flex min-h-14 items-center justify-between font-display text-lg",
+                      isActive(item.href)
+                        ? "font-semibold text-teal-ink"
+                        : "font-medium text-navy",
                     )}
                   >
                     {item.label}
+                    <ArrowRightIcon
+                      aria-hidden="true"
+                      className="size-4 shrink-0 text-ink-subtle"
+                    />
                   </Link>
                 </li>
               ))}
-              <li className="border-b border-line">
-                <a
-                  href={loginUrl}
-                  className="flex min-h-14 items-center justify-between text-lg text-ink"
-                >
-                  Login
-                  <span className="text-sm text-ink-subtle">app.trailcomand.com</span>
-                </a>
-              </li>
+              {loginUrl ? (
+                <li className="border-b border-line">
+                  <a
+                    rel="noopener"
+                    href={loginUrl}
+                    className="flex min-h-14 items-center justify-between font-display text-lg font-medium text-navy"
+                  >
+                    Login
+                    <ArrowRightIcon
+                      aria-hidden="true"
+                      className="size-4 shrink-0 text-ink-subtle"
+                    />
+                  </a>
+                </li>
+              ) : null}
             </ul>
             <ButtonLink href={PILOT_CTA_HREF} size="lg" className="mt-6 w-full">
               {PILOT_CTA_LABEL}
             </ButtonLink>
-            <p className="mt-3 text-center text-sm text-ink-muted">
-              Free 3-month pilot for 3 trekking agencies.
+            <p className="mt-3 text-center text-sm text-ink-subtle">
+              The application is still in development. Ask us about the pilot.
             </p>
           </nav>
         </div>

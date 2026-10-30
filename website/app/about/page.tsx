@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 import { PilotCta } from "@/components/pilot-cta";
 import { pageMetadata } from "@/lib/page-metadata";
 import { SectionHeading } from "@/components/section-heading";
-import { aboutHonesty, aboutPrinciples } from "@/lib/content";
+import { aboutHonesty, aboutPrinciples, pilotStatus } from "@/lib/content";
+import officialLogo from "@/docs/logoforweb.png";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
@@ -23,6 +25,27 @@ export default function AboutPage() {
             title="The plan should survive contact with the mountain."
             description="Most travel software is good at selling a trip and getting it onto the calendar. TrailComand is being built for the harder half: the days after departure, when the plan has to change and someone has to keep six people, two guides and a lodge in agreement."
           />
+
+          {/*
+              Brand artwork. The original brand image is used directly, with no
+              recolouring or cropping. It is presented on a white surface so the
+              original forest-green, gold and blue details remain legible.
+          */}
+          <figure className="mt-12 max-w-xl border-t border-line pt-8">
+            <div className="inline-flex rounded-card border border-line bg-surface p-6 shadow-card sm:p-8">
+              <Image
+                src={officialLogo}
+                alt="The TrailComand brand mark: a mountain peak with a compass rose above the TrailComand wordmark."
+                sizes="(min-width: 640px) 20rem, 70vw"
+                className="h-auto w-full max-w-[20rem]"
+              />
+            </div>
+            <figcaption className="mt-4 text-xs leading-5 text-ink-subtle">
+              The current brand artwork, shown here in its original green palette and
+              proportions. The wordmark is set as &ldquo;Trailcomand&rdquo;; this site
+              uses &ldquo;TrailComand&rdquo; in running text.
+            </figcaption>
+          </figure>
         </div>
       </section>
 
@@ -100,6 +123,23 @@ export default function AboutPage() {
               title="Early, small, and honest about it."
               description="The product is in development and the company behind it is just starting. That has some straightforward consequences for this website."
             />
+            <dl className="mt-8 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3">
+              {[
+                { label: "Product", value: "In development" },
+                { label: "Pilot", value: pilotStatus.label },
+                { label: "Public sign-up", value: "None yet" },
+              ].map((item) => (
+                <div key={item.label} className="bg-surface px-4 py-3">
+                  <dt className="text-[0.6875rem] font-semibold tracking-[0.08em] text-ink-subtle uppercase">
+                    {item.label}
+                  </dt>
+                  <dd className="mt-1 flex items-center gap-1.5 font-display text-sm font-semibold text-navy">
+                    <span aria-hidden="true" className="size-1.5 rounded-full bg-teal" />
+                    {item.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
             <ul className="mt-8 space-y-4 border-t border-line pt-6">
               {aboutHonesty.map((line) => (
                 <li key={line} className="flex gap-3">
