@@ -1,33 +1,34 @@
 import Link from "next/link";
 import Image from "next/image";
-import { contactEmail, legalNav, loginUrl, primaryNav, routes } from "@/lib/site-config";
+
 import officialLogo from "@/docs/logoforweb.png";
+import { contactEmail, legalNav, loginUrl, primaryNav, routes } from "@/lib/site-config";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-navy-line bg-navy text-on-navy">
+    <footer className="mt-auto border-t border-line bg-[#f7faf8] text-ink">
       <div className="container-page py-12 lg:py-14">
         <div className="grid gap-10 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-16">
           <div className="max-w-md">
             <Link
               href={routes.home}
-              className="inline-flex rounded-md bg-white px-3 py-2"
               aria-label="TrailComand home"
+              className="inline-flex rounded-lg border border-line bg-surface px-3 py-2 shadow-sm"
             >
               <Image
-                src={officialLogo}
                 sizes="180px"
+                src={officialLogo}
                 alt="TrailComand logo"
-                className="h-10 w-auto"
+                className="h-12 w-auto"
               />
             </Link>
-            <p className="mt-4 text-sm leading-6 text-on-navy-muted">
+            <p className="mt-4 text-sm leading-6 text-ink-muted">
               An operations platform for trekking and adventure travel agencies that helps
               teams record trip disruptions, understand what they affect, and coordinate
               recovery in one place. Built for complex, multi-day trips. Currently in
               development.
             </p>
-            <p className="mt-4 text-xs leading-5 text-on-navy-subtle">
+            <p className="mt-4 text-xs leading-5 text-ink-subtle">
               This site is the product&rsquo;s public website. The TrailComand application
               is a separate, private workspace that is not publicly accessible while it is
               being built.
@@ -36,7 +37,7 @@ export function SiteFooter() {
 
           <div className="grid grid-cols-2 gap-8">
             <nav aria-label="Footer">
-              <h2 className="font-display text-xs font-semibold tracking-[0.1em] text-on-navy-subtle uppercase">
+              <h2 className="font-display text-xs font-semibold tracking-[0.1em] text-ink-subtle uppercase">
                 Product
               </h2>
               <ul className="mt-4 space-y-2.5">
@@ -44,7 +45,7 @@ export function SiteFooter() {
                   <li key={item.key}>
                     <Link
                       href={item.href}
-                      className="inline-flex min-h-8 items-center rounded text-sm text-on-navy-muted transition-colors hover:text-white"
+                      className="inline-flex min-h-8 items-center rounded text-sm text-ink-muted transition-colors hover:text-teal-ink"
                     >
                       {item.label}
                     </Link>
@@ -54,14 +55,14 @@ export function SiteFooter() {
             </nav>
 
             <div>
-              <h2 className="font-display text-xs font-semibold tracking-[0.1em] text-on-navy-subtle uppercase">
+              <h2 className="font-display text-xs font-semibold tracking-[0.1em] text-ink-subtle uppercase">
                 Access
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
                   <Link
                     href={routes.contact}
-                    className="inline-flex min-h-8 items-center rounded text-sm text-on-navy-muted transition-colors hover:text-white"
+                    className="inline-flex min-h-8 items-center rounded text-sm text-ink-muted transition-colors hover:text-teal-ink"
                   >
                     Request a pilot
                   </Link>
@@ -71,9 +72,9 @@ export function SiteFooter() {
                 {loginUrl ? (
                   <li>
                     <a
-                      href={loginUrl}
                       rel="noopener"
-                      className="inline-flex min-h-8 items-center rounded text-sm text-on-navy-muted transition-colors hover:text-white"
+                      href={loginUrl}
+                      className="inline-flex min-h-8 items-center rounded text-sm text-ink-muted transition-colors hover:text-teal-ink"
                     >
                       Login
                     </a>
@@ -83,7 +84,7 @@ export function SiteFooter() {
                   <li>
                     <a
                       href={`mailto:${contactEmail}`}
-                      className="inline-flex min-h-8 items-center rounded text-sm break-all text-on-navy-muted transition-colors hover:text-white"
+                      className="inline-flex min-h-8 items-center rounded text-sm break-all text-ink-muted transition-colors hover:text-teal-ink"
                     >
                       {contactEmail}
                     </a>
@@ -94,23 +95,20 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-navy-line pt-6 text-sm text-on-navy-subtle sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-line pt-6 text-sm text-ink-subtle sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 TrailComand. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
             {legalNav.map((item) => (
               <Link
                 key={item.key}
                 href={item.href}
-                className="inline-flex min-h-8 items-center rounded text-on-navy-muted transition-colors hover:text-white"
+                className="inline-flex min-h-8 items-center rounded text-ink-muted transition-colors hover:text-teal-ink"
               >
                 {item.label}
               </Link>
             ))}
             <p className="inline-flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className="size-1.5 rounded-full bg-teal-on-navy"
-              />
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-teal-strong" />
               Product in development
             </p>
           </div>

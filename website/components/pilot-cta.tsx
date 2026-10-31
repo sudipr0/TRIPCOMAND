@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
-import { ButtonLink } from "@/components/ui/button";
-import { ArrowRightIcon } from "@/components/ui/icons";
+
 import { cn } from "@/lib/cn";
 import { pilot } from "@/lib/content";
+import { ButtonLink } from "@/components/ui/button";
+import { ArrowRightIcon } from "@/components/ui/icons";
 import { PILOT_CTA_HREF, PILOT_CTA_LABEL } from "@/lib/site-config";
 
 type PilotCtaProps = {
@@ -30,37 +31,37 @@ export function PilotCta({
       className={cn("border-t border-line bg-canvas", className)}
     >
       <div className="container-page py-14 lg:py-20">
-        <div className="relative overflow-hidden rounded-xl bg-navy px-5 py-10 text-on-navy sm:px-10 sm:py-12 lg:px-14">
+        <div className="relative overflow-hidden rounded-[1.25rem] border border-line bg-white px-5 py-10 shadow-[0_22px_38px_-28px_rgba(23,37,31,0.2)] sm:px-10 sm:py-12 lg:px-14">
           <div
             aria-hidden="true"
-            className="bg-grid-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_120%_at_100%_0%,black,transparent)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(8,122,80,0.12),transparent_34%)]"
           />
           <div className="relative grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12">
             <div className="max-w-xl">
               <h2
                 id={headingId}
-                className="font-display text-[1.625rem] leading-[1.15] font-bold tracking-[-0.028em] text-white sm:text-[2rem]"
+                className="font-display text-[1.625rem] leading-[1.15] font-bold tracking-[-0.028em] text-navy sm:text-[2rem]"
               >
                 {title}
               </h2>
-              <p className="mt-3 text-[0.9375rem] leading-6 text-on-navy-muted sm:text-base">
+              <p className="mt-3 text-[0.9375rem] leading-6 text-ink-muted sm:text-base">
                 {description}
               </p>
-              <p className="mt-3 text-sm font-medium text-teal-on-navy">
+              <p className="mt-3 text-sm font-medium text-teal-ink">
                 No credit card required. Just honest feedback.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row md:flex-col md:items-stretch">
               <ButtonLink
-                href={PILOT_CTA_HREF}
                 size="lg"
-                variant="inverse"
+                variant="primary"
+                href={PILOT_CTA_HREF}
                 className="w-full sm:w-auto"
               >
                 {PILOT_CTA_LABEL}
                 <ArrowRightIcon className="size-4" aria-hidden="true" />
               </ButtonLink>
-              <p className="text-center text-xs leading-5 text-on-navy-subtle md:text-left">
+              <p className="text-center text-xs leading-5 text-ink-subtle md:text-left">
                 Three agencies · three months
                 <br className="hidden md:block" /> · free while in development
               </p>

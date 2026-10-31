@@ -77,10 +77,10 @@ const tasks = [
 export function DashboardPreview({ className }: { className?: string }) {
   return (
     <figure id="product-preview" className={cn("m-0 scroll-mt-24", className)}>
-      <div className="overflow-hidden rounded-xl border border-line-strong bg-surface shadow-[0_24px_60px_-24px_rgb(0_0_0/0.55)]">
+      <div className="overflow-hidden rounded-[1rem] border border-line bg-surface shadow-[0_22px_44px_-24px_rgba(23,37,31,0.2)]">
         {/* Demo-data banner: impossible to miss, intentionally not subtle. */}
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 border-b border-navy-line bg-navy-raised px-3 py-2 text-[0.6875rem] leading-4 text-on-navy-muted sm:px-4">
-          <span className="inline-flex items-center gap-1.5 rounded-sm bg-teal px-1.5 py-px text-[0.625rem] font-semibold tracking-wide text-navy uppercase">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 border-b border-line bg-[#f3f9f5] px-3 py-2 text-[0.6875rem] leading-4 text-ink-muted sm:px-4">
+          <span className="inline-flex items-center gap-1.5 rounded-sm bg-[#dff3e8] px-1.5 py-px text-[0.625rem] font-semibold tracking-wide text-teal-ink uppercase">
             Illustrative
           </span>
           <span>
@@ -264,11 +264,8 @@ export function DashboardPreview({ className }: { className?: string }) {
         </div>
       </div>
 
-      <figcaption className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-on-navy-subtle">
-        <span
-          aria-hidden="true"
-          className="mt-1.5 size-1 shrink-0 rounded-full bg-teal-on-navy"
-        />
+      <figcaption className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-ink-muted">
+        <span aria-hidden="true" className="mt-1.5 size-1 shrink-0 rounded-full bg-teal-strong" />
         <span>
           Illustrative product preview. The trip, travelers and lodge are fictional demo
           data, not a live record of any agency&rsquo;s operation. TrailComand does not
@@ -280,24 +277,21 @@ export function DashboardPreview({ className }: { className?: string }) {
           available without parsing the mockup. Placed after the panel so it has
           room to be legible at 360px, where a four-across strip was unreadable. */}
       <ol
-        className="mt-5 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4"
         aria-label="The scenario shown in the preview, in four steps"
+        className="mt-5 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4"
       >
         {STEPS.map((step) => (
-          <li key={step.n} className="border-t border-navy-line pt-3">
+          <li key={step.n} className="border-t border-line pt-3">
             <p className="flex items-baseline gap-2">
-              <span
-                aria-hidden="true"
-                className="font-mono text-[0.75rem] leading-none text-teal-on-navy"
-              >
+              <span aria-hidden="true" className="font-mono text-[0.75rem] leading-none text-teal-strong">
                 {step.n}
               </span>
-              <span className="text-[0.8125rem] leading-5 font-semibold text-white">
+              <span className="text-[0.8125rem] leading-5 font-semibold text-ink">
                 <span className="sr-only">Step {Number(step.n)}: </span>
                 {step.label}
               </span>
             </p>
-            <p className="mt-1.5 text-xs leading-5 text-on-navy-muted">{step.text}</p>
+            <p className="mt-1.5 text-xs leading-5 text-ink-muted">{step.text}</p>
           </li>
         ))}
       </ol>

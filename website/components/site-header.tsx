@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { cn } from "@/lib/cn";
+import officialLogo from "@/docs/logoforweb.png";
 import { primaryNav, routes } from "@/lib/site-config";
 import { ButtonAnchor, ButtonLink } from "@/components/ui/button";
 import { ArrowRightIcon, CloseIcon, MenuIcon } from "@/components/ui/icons";
 import { loginUrl, PILOT_CTA_HREF, PILOT_CTA_LABEL } from "@/lib/site-config";
-import officialLogo from "@/docs/logoforweb.png";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -88,18 +88,18 @@ export function SiteHeader() {
     // No backdrop-filter here: a filtered ancestor becomes the containing block
     // for `position: fixed` descendants, which collapsed the mobile menu panel
     // to the header's height. An opaque canvas background is used instead.
-    <header className="sticky top-0 z-50 border-b border-line bg-surface">
-      <div className="container-page flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
+    <header className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur-sm">
+      <div className="container-page flex h-16 items-center justify-between gap-4 lg:h-[4.625rem]">
         <Link
           href={routes.home}
           aria-label="TrailComand home"
-          className="group -mx-1 flex items-center rounded-md px-1 py-1.5"
+          className="group flex items-center rounded-lg px-1 py-1.5"
         >
           <Image
             priority
             src={officialLogo}
             alt="TrailComand logo"
-            className="h-8 w-auto shrink-0 sm:h-9 lg:h-10"
+            className="h-11 w-auto shrink-0 sm:h-12 lg:h-[3.25rem]"
           />
         </Link>
 
@@ -113,7 +113,7 @@ export function SiteHeader() {
                   className={cn(
                     "relative inline-flex h-9 items-center rounded-md px-3 text-[0.9375rem] transition-colors",
                     isActive(item.href)
-                      ? "font-semibold text-navy after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-teal"
+                      ? "font-semibold text-navy after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-teal-strong"
                       : "text-ink-muted hover:bg-surface-sunken hover:text-navy",
                   )}
                 >
@@ -169,7 +169,7 @@ export function SiteHeader() {
           ref={panelRef}
           aria-modal="true"
           aria-label="Site menu"
-          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain border-t border-line bg-surface lg:hidden"
+          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain border-t border-line bg-white lg:hidden"
         >
           <nav aria-label="Mobile" className="container-page pt-3 pb-8">
             <ul className="flex flex-col">
